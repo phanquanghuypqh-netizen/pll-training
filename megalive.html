@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quy trình tổ chức 1 phiên Megalive</title>
+<style>
+:root{
+  --accent:#D97757;--accent-light:#FBEEE6;--accent-strong:#A85533;
+  --bg:#FAFAF7;--surface:#FFF;--surface-2:#F4F4F1;
+  --border:#E8E8E4;--text:#1A1A18;--text-2:#6B6B66;
+  --font-sans:system-ui,-apple-system,sans-serif;
+  --radius:8px;--radius-lg:12px;--shadow:0 1px 3px rgba(0,0,0,.08)
+}
+[data-theme="dark"]{--bg:#1A1714;--surface:#221E1A;--surface-2:#2A2520;
+  --border:#2E2924;--text:#F5F0E8;--text-2:#C8C0B6;--accent-light:#3A2A22}
+[data-theme="dark"] .diagram-wrap svg{filter:brightness(.92) contrast(1.05)}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-sans);background:var(--bg);color:var(--text);line-height:1.7;min-height:100vh;-webkit-font-smoothing:antialiased;transition:background .2s,color .2s}
+strong{font-weight:600}
+ul,ol{padding-left:1.5rem}li{margin:.3rem 0}
+p{margin:.75rem 0}
+h2,h3{font-weight:700;line-height:1.3;scroll-margin-top:80px}
+h2{font-size:1.5rem;margin:1rem 0;border-bottom:2px solid var(--border);padding-bottom:.5rem}
+h3{font-size:1.1rem;margin:1.5rem 0 .6rem;color:var(--accent-strong)}
+.theme-toggle{position:fixed;top:1rem;right:1rem;z-index:200;width:44px;height:44px;border-radius:50%;border:2px solid var(--border);background:var(--surface);cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;transition:all .2s;box-shadow:var(--shadow)}
+.theme-toggle:hover{border-color:var(--accent);transform:scale(1.1)}
+.site-header{background:linear-gradient(135deg,var(--accent),var(--accent-strong));color:#fff;padding:3rem 1.5rem 2.5rem;text-align:center}
+.site-header h1{font-size:clamp(1.8rem,4vw,2.6rem);font-weight:900;margin-bottom:.5rem}
+.site-header p{opacity:.9;font-size:1.05rem;max-width:600px;margin:0 auto}
+.header-meta{display:flex;gap:1.5rem;justify-content:center;margin-top:1.25rem;font-size:.85rem;opacity:.85;flex-wrap:wrap}
+.progress-wrap{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:.5rem 1.5rem;backdrop-filter:blur(8px)}
+.progress-bar{height:4px;background:var(--border);border-radius:4px;overflow:hidden}
+.progress-fill{height:100%;background:var(--accent);width:0;transition:width .3s}
+.progress-label{font-size:.75rem;color:var(--text-2);margin-top:.3rem;text-align:center}
+.container{max-width:900px;margin:0 auto;padding:1.5rem}
+.intro-box{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem 2rem;margin-bottom:2rem;border-left:4px solid var(--accent)}
+.intro-box h3{margin-bottom:.5rem}
+.step-nav{display:flex;flex-wrap:wrap;gap:.5rem;margin-bottom:2rem;padding:1rem;background:var(--surface);border-radius:var(--radius-lg);border:1px solid var(--border);box-shadow:var(--shadow)}
+.step-nav button{padding:.5rem 1rem;border:1px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;font-size:.8rem;color:var(--text-2);transition:all .15s;font-family:inherit;display:flex;align-items:center;gap:.4rem}
+.step-nav button:hover{border-color:var(--accent);color:var(--accent)}
+.step-nav button.active{background:var(--accent);color:#fff;border-color:var(--accent)}
+.step-num-tag{font-weight:700;font-size:.7rem;opacity:.7}
+.step{display:none;animation:fadeIn .3s ease}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.callout{display:flex;gap:.75rem;padding:1rem 1.25rem;border-radius:var(--radius);border-left:4px solid;margin:1.25rem 0;max-width:72ch}
+.callout-icon{font-size:1.2rem;flex-shrink:0;margin-top:.1rem}
+.callout-tip{background:var(--accent-light);border-color:var(--accent)}
+.callout-tip .callout-title{color:var(--accent-strong)}
+.callout-warn{background:#FFFBEB;border-color:#F59E0B}
+.callout-warn .callout-title{color:#B45309}
+[data-theme="dark"] .callout-warn{background:#2A2410}
+.callout-title{font-weight:700;font-size:.85rem;margin-bottom:.3rem}
+.diagram-wrap{margin:1.5rem 0;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow);overflow-x:auto;position:relative;cursor:zoom-in}
+.diagram-wrap svg{display:block;margin:0 auto;max-width:100%;height:auto}
+.diagram-caption{font-size:.8rem;color:var(--text-2);text-align:center;margin-top:.75rem;padding-top:.75rem;border-top:1px dashed var(--border)}
+.zoom-hint{position:absolute;top:.6rem;right:.6rem;z-index:5;background:rgba(255,255,255,.95);border:1px solid var(--border);border-radius:20px;padding:.3rem .7rem;font-size:.7rem;font-weight:600;color:var(--accent-strong);display:flex;align-items:center;gap:.3rem;box-shadow:var(--shadow);pointer-events:none}
+[data-theme="dark"] .zoom-hint{background:rgba(34,30,26,.95);color:var(--accent)}
+.svg-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1000;align-items:center;justify-content:center;padding:1rem}
+.svg-modal.open{display:flex}
+.svg-modal-content{max-width:100%;max-height:100%;overflow:auto;-webkit-overflow-scrolling:touch;display:flex;align-items:center;justify-content:center}
+.svg-modal-content svg{width:auto;height:auto;min-width:min(100%,1200px);max-width:none}
+@media(max-width:720px){.svg-modal-content svg{min-width:1100px}}
+.svg-modal-close{position:fixed;top:1rem;right:1rem;width:48px;height:48px;border-radius:50%;background:#fff;border:none;cursor:pointer;font-size:1.5rem;font-weight:700;color:#1A1A18;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.3);z-index:1001}
+.svg-modal-hint{position:fixed;bottom:1rem;left:50%;transform:translateX(-50%);background:rgba(255,255,255,.95);padding:.5rem 1rem;border-radius:20px;font-size:.8rem;color:#1A1A18;z-index:1001}
+.quiz{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;margin:1.25rem 0}
+.quiz-q{font-weight:600;margin-bottom:1rem;font-size:.95rem}
+.quiz-option{display:block;width:100%;text-align:left;padding:.75rem 1rem;border:2px solid var(--border);border-radius:8px;background:var(--bg);cursor:pointer;margin:.4rem 0;font-size:.9rem;transition:all .15s;font-family:inherit;color:var(--text)}
+.quiz-option:hover{border-color:var(--accent);background:var(--accent-light)}
+.quiz-option.correct{border-color:#22C55E;background:#F0FDF4}
+.quiz-option.wrong{border-color:#EF4444;background:#FEF2F2}
+.quiz-feedback{display:none;margin-top:.75rem;padding:.75rem 1rem;border-radius:8px;font-size:.85rem}
+.quiz-feedback.show{display:block}
+.quiz-feedback.correct-fb{background:#F0FDF4;color:#047857;border:1px solid #86EFAC}
+.quiz-feedback.wrong-fb{background:#FEF2F2;color:#B91C1C;border:1px solid #FCA5A5}
+.quiz-score{text-align:center;font-size:1.5rem;font-weight:800;color:var(--accent);margin:1rem 0}
+.checklist{list-style:none;padding:0;margin:1rem 0}
+.checklist li{padding:.75rem 1rem;border:1px solid var(--border);border-radius:8px;margin:.4rem 0;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:.75rem;font-size:.9rem}
+.checklist li::before{content:'☐';font-size:1.2rem;flex-shrink:0}
+.checklist li.checked{background:#F0FDF4;border-color:#86EFAC}
+.checklist li.checked::before{content:'☑';color:#047857}
+.checklist-score{text-align:center;font-size:.85rem;color:var(--text-2);margin-top:.75rem}
+.gallery-grid{display:grid;grid-template-columns:1fr;gap:2rem;margin:1.5rem 0}
+.gallery-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.5rem;box-shadow:var(--shadow)}
+.gallery-item h4{color:var(--accent-strong);margin-bottom:1rem;font-size:.9rem}
+@media print{.gallery-item{break-inside:avoid}}
+.step-actions{display:flex;justify-content:space-between;gap:1rem;margin-top:2rem;padding-top:1.5rem;border-top:1px solid var(--border)}
+.step-actions button{padding:.75rem 1.5rem;border:2px solid var(--accent);border-radius:8px;background:var(--bg);color:var(--accent);cursor:pointer;font-weight:600;font-size:.9rem;transition:all .15s;font-family:inherit}
+.step-actions button:hover:not(:disabled){background:var(--accent);color:#fff}
+.step-actions button:disabled{opacity:.3;cursor:not-allowed}
+.site-footer{text-align:center;padding:2rem;font-size:.8rem;color:var(--text-2);border-top:1px solid var(--border);margin-top:3rem}
+@media(max-width:720px){.site-header{padding:2rem 1rem 1.5rem}.step-nav button{padding:.4rem .6rem;font-size:.72rem}.container{padding:1rem}}
+@media print{.theme-toggle,.progress-wrap,.step-nav,.step-actions{display:none}.step{display:block !important;page-break-before:always}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle">☀️</button>
+<header class="site-header">
+  <h1>Quy trình tổ chức 1 phiên Megalive</h1>
+  <p>Checklist & các bước chuẩn để chạy 1 phiên Megalive thành công</p>
+  <div class="header-meta">
+    <span>📚 5 bước</span><span>⏱ ~8 phút</span><span>📊 1 sơ đồ</span><span>✍️ Quiz + Checklist</span>
+  </div>
+</header>
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Bước 1 / 5</div>
+</div>
+<div class="container">
+  <div class="intro-box">
+    <h3>🎯 Sau bài này bạn sẽ:</h3>
+    <p>Nắm rõ 3 giai đoạn của 1 phiên Megalive (TRƯỚC – TRONG – SAU), biết các đầu việc bắt buộc ở mỗi giai đoạn, và check được mình đã chuẩn bị đủ trước khi go-live.</p>
+  </div>
+  <nav class="step-nav" id="stepNav"></nav>
+
+  <!-- STEP 1: Tổng quan -->
+  <section class="step active" data-step="1" id="s-tongquan">
+    <h2>Bước 1: Tổng quan 3 giai đoạn</h2>
+    <p>Một phiên Megalive luôn được chia làm <strong>3 giai đoạn</strong>: <strong>TRƯỚC</strong> (chuẩn bị) – <strong>TRONG</strong> (vận hành live) – <strong>SAU</strong> (đo lường & rút kinh nghiệm). Mỗi giai đoạn có đầu việc riêng, không được bỏ qua.</p>
+
+    <div class="diagram-wrap">
+      <div class="zoom-hint">🔍 Bấm để xem to</div>
+      <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceAlpha" stdDeviation="4"/>
+            <feOffset dy="4"/><feComponentTransfer><feFuncA type="linear" slope="0.18"/></feComponentTransfer>
+            <feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <text x="500" y="40" font-family="system-ui,sans-serif" font-size="22" font-weight="800" fill="#2A1F14" text-anchor="middle">3 giai đoạn của 1 phiên Megalive</text>
+
+        <!-- 3 phase boxes -->
+        <g filter="url(#sh)">
+          <rect x="60" y="90" width="260" height="120" rx="12" fill="#D97757" stroke="#A85533" stroke-width="2"/>
+          <text x="190" y="125" font-family="system-ui" font-size="20" font-weight="800" fill="#FFF" text-anchor="middle">① TRƯỚC</text>
+          <text x="190" y="150" font-family="system-ui" font-size="13" fill="#FFF" text-anchor="middle">Chuẩn bị</text>
+          <text x="190" y="175" font-family="system-ui" font-size="12" fill="#FBEEE6" text-anchor="middle">8 đầu việc chính</text>
+          <text x="190" y="195" font-family="system-ui" font-size="12" fill="#FBEEE6" text-anchor="middle">~2-3 tuần trước live</text>
+        </g>
+
+        <g filter="url(#sh)">
+          <rect x="370" y="90" width="260" height="120" rx="12" fill="#C68F1E" stroke="#8C6515" stroke-width="2"/>
+          <text x="500" y="125" font-family="system-ui" font-size="20" font-weight="800" fill="#FFF" text-anchor="middle">② TRONG</text>
+          <text x="500" y="150" font-family="system-ui" font-size="13" fill="#FFF" text-anchor="middle">Vận hành live</text>
+          <text x="500" y="175" font-family="system-ui" font-size="12" fill="#FFF8E0" text-anchor="middle">Tổ chức live</text>
+          <text x="500" y="195" font-family="system-ui" font-size="12" fill="#FFF8E0" text-anchor="middle">Ngày diễn ra</text>
+        </g>
+
+        <g filter="url(#sh)">
+          <rect x="680" y="90" width="260" height="120" rx="12" fill="#2E8B57" stroke="#1F6240" stroke-width="2"/>
+          <text x="810" y="125" font-family="system-ui" font-size="20" font-weight="800" fill="#FFF" text-anchor="middle">③ SAU</text>
+          <text x="810" y="150" font-family="system-ui" font-size="13" fill="#FFF" text-anchor="middle">Hậu live</text>
+          <text x="810" y="175" font-family="system-ui" font-size="12" fill="#E0F5E8" text-anchor="middle">2 đầu việc</text>
+          <text x="810" y="195" font-family="system-ui" font-size="12" fill="#E0F5E8" text-anchor="middle">Trong 3-5 ngày</text>
+        </g>
+
+        <!-- Arrows -->
+        <path d="M320 150 L370 150" stroke="#5C4A3A" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+        <path d="M630 150 L680 150" stroke="#5C4A3A" stroke-width="3" fill="none" marker-end="url(#arr)"/>
+        <defs>
+          <marker id="arr" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+            <polygon points="0 0, 10 3, 0 6" fill="#5C4A3A"/>
+          </marker>
+        </defs>
+
+        <!-- Detail rows -->
+        <text x="190" y="245" font-family="system-ui" font-size="13" font-weight="700" fill="#A85533" text-anchor="middle">Việc trọng tâm</text>
+        <text x="190" y="270" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Chốt khách mời + lịch</text>
+        <text x="190" y="290" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Plan truyền thông + seeding</text>
+        <text x="190" y="310" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• List deal + chuẩn bị hàng</text>
+        <text x="190" y="330" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Kịch bản + Fitting + Setup</text>
+
+        <text x="500" y="245" font-family="system-ui" font-size="13" font-weight="700" fill="#8C6515" text-anchor="middle">Việc trọng tâm</text>
+        <text x="500" y="270" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Vận hành theo kịch bản</text>
+        <text x="500" y="290" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Theo dõi tương tác</text>
+        <text x="500" y="310" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Chốt đơn realtime</text>
+        <text x="500" y="330" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Xử lý sự cố nhanh</text>
+
+        <text x="810" y="245" font-family="system-ui" font-size="13" font-weight="700" fill="#1F6240" text-anchor="middle">Việc trọng tâm</text>
+        <text x="810" y="270" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Truyền thông sau live</text>
+        <text x="810" y="290" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Họp rút kinh nghiệm</text>
+        <text x="810" y="310" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Báo cáo doanh số</text>
+        <text x="810" y="330" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">• Lưu archive video</text>
+
+        <!-- Bottom note -->
+        <rect x="60" y="380" width="880" height="70" rx="8" fill="#FBEEE6" stroke="#D97757" stroke-width="1.5"/>
+        <text x="500" y="410" font-family="system-ui" font-size="14" font-weight="700" fill="#A85533" text-anchor="middle">⚠ Nguyên tắc: KHÔNG bỏ qua bước nào ở giai đoạn TRƯỚC</text>
+        <text x="500" y="432" font-family="system-ui" font-size="12" fill="#2A1F14" text-anchor="middle">Mọi sự cố TRONG live đều có gốc rễ từ việc chuẩn bị thiếu ở giai đoạn TRƯỚC</text>
+      </svg>
+      <div class="diagram-caption">Sơ đồ 3 giai đoạn Megalive — in A3 dán phòng vận hành</div>
+    </div>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">💡</div>
+      <div class="callout-body">
+        <div class="callout-title">TIP nhớ nhanh</div>
+        80% công sức là ở giai đoạn <strong>TRƯỚC</strong>. Nếu chuẩn bị tốt, ngày live chỉ là "diễn lại kịch bản".
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 2: TRƯỚC -->
+  <section class="step" data-step="2" id="s-truoc">
+    <h2>Bước 2: Giai đoạn TRƯỚC live (chuẩn bị)</h2>
+    <p>Đây là giai đoạn nặng nhất — 8 đầu việc chính, cần làm <strong>tuần tự</strong> vì việc sau phụ thuộc việc trước.</p>
+
+    <h3>1️⃣ Lựa chọn khách mời</h3>
+    <p>Chọn khách mời phù hợp tệp khách của brand (Jennie Choo / Lysilk...). Kiểm tra: phong cách có khớp brand? Lịch trống ngày dự kiến? Mức cát-sê có nằm trong budget?</p>
+
+    <h3>2️⃣ Chốt lịch live</h3>
+    <p>Sau khi 2 bên ok khách mời → chốt cứng <strong>ngày + khung giờ</strong>. Gửi calendar invite cho team nội bộ.</p>
+
+    <h3>3️⃣ Plan truyền thông + Plan seeding</h3>
+    <p>Lên kế hoạch trước ít nhất <strong>2 tuần</strong>: bài teaser, bài countdown, post seeding nhóm KOL/affiliate, push email khách VIP.</p>
+
+    <h3>4️⃣ List deal + Kế hoạch sản xuất hàng + Quà tặng</h3>
+    <p>Chốt SKU nào lên live, giá deal, số lượng dự kiến bán → đẩy lệnh sản xuất / tái hàng. List quà tặng minigame.</p>
+
+    <div class="callout callout-warn">
+      <div class="callout-icon">⚠️</div>
+      <div class="callout-body">
+        <div class="callout-title">Lưu ý hàng hóa</div>
+        Hàng phải về kho trước live <strong>tối thiểu 3 ngày</strong> để đóng gói + QC. Live thiếu hàng = mất uy tín.
+      </div>
+    </div>
+
+    <h3>5️⃣ Kịch bản livestream</h3>
+    <p>Viết kịch bản chi tiết: timeline phút thứ mấy giới thiệu SKU nào, khi nào minigame, khi nào flash sale.</p>
+
+    <h3>6️⃣ Gửi thông tin buổi live cho khách mời</h3>
+    <p>Gửi kịch bản + outfit guide + địa điểm + giờ tới sớm cho khách mời ít nhất <strong>3 ngày trước</strong>.</p>
+
+    <h3>7️⃣ Fitting với khách mời</h3>
+    <p>Lên lịch fitting <strong>1-2 ngày trước live</strong>. Confirm outfit fit, chuẩn bị đồ dự phòng.</p>
+
+    <h3>8️⃣ Setup góc live + test live</h3>
+    <p>Setup ánh sáng, camera, mic, mạng. Test live thử nội bộ ít nhất 30 phút để kiểm tra mọi thiết bị.</p>
+  </section>
+
+  <!-- STEP 3: TRONG -->
+  <section class="step" data-step="3" id="s-trong">
+    <h2>Bước 3: Giai đoạn TRONG live (vận hành)</h2>
+    <p>Ngày diễn ra live — mọi người vào vị trí, chạy theo kịch bản.</p>
+
+    <h3>Tổ chức live</h3>
+    <ul>
+      <li><strong>Trước giờ live 2h:</strong> khách mời tới, make-up, brief lại kịch bản</li>
+      <li><strong>Trước giờ live 30 phút:</strong> test cuối, set sản phẩm theo thứ tự kịch bản</li>
+      <li><strong>Trong live:</strong> 1 người điều phối tổng, 1 người chốt đơn realtime, 1 người theo dõi comment</li>
+      <li><strong>Xử lý sự cố:</strong> mạng yếu → có 4G dự phòng. Khách mời mệt → có nước, ghế nghỉ</li>
+    </ul>
+
+    <div class="callout callout-tip">
+      <div class="callout-icon">🎬</div>
+      <div class="callout-body">
+        <div class="callout-title">Vai trò trong live</div>
+        Mỗi vai trò chỉ làm 1 việc — đừng để 1 người vừa chốt đơn vừa rep comment vừa lo kỹ thuật.
+      </div>
+    </div>
+  </section>
+
+  <!-- STEP 4: SAU + Checklist -->
+  <section class="step" data-step="4" id="s-sau">
+    <h2>Bước 4: Giai đoạn SAU live + Checklist</h2>
+
+    <h3>1️⃣ Truyền thông sau live</h3>
+    <p>Trong vòng <strong>24-48h</strong>: clip highlight, post cảm ơn khách mời, push remarketing tới khách xem nhưng chưa mua.</p>
+
+    <h3>2️⃣ Họp rút kinh nghiệm</h3>
+    <p>Trong vòng <strong>3-5 ngày</strong>: họp full team review — doanh số vs target, SKU bán chạy/ế, sự cố phát sinh, action cho live sau.</p>
+
+    <h3>✅ Checklist tổng (tick khi xong)</h3>
+    <ul class="checklist" id="mainChecklist">
+      <li>Đã chốt khách mời + ký hợp đồng</li>
+      <li>Đã chốt lịch + gửi calendar invite team</li>
+      <li>Plan truyền thông đăng đủ ≥2 tuần trước live</li>
+      <li>Hàng về kho ≥3 ngày trước live, QC xong</li>
+      <li>Kịch bản livestream chi tiết theo phút</li>
+      <li>Khách mời nhận info + outfit guide ≥3 ngày trước</li>
+      <li>Đã fitting 1-2 ngày trước live</li>
+      <li>Setup góc live + test thử ≥30 phút</li>
+      <li>Trong live: phân vai rõ (điều phối / chốt đơn / comment)</li>
+      <li>Sau live: post truyền thông trong 24-48h</li>
+      <li>Họp rút kinh nghiệm trong 3-5 ngày</li>
+    </ul>
+    <div class="checklist-score">0/11 mục đã nắm</div>
+  </section>
+
+  <!-- STEP 5: Quiz + Gallery -->
+  <section class="step" data-step="5" id="s-quiz">
+    <h2>Bước 5: Kiểm tra cuối bài</h2>
+
+    <div class="quiz" data-quiz="1">
+      <p class="quiz-q">1. Một phiên Megalive được chia làm mấy giai đoạn?</p>
+      <button class="quiz-option">A. 2 giai đoạn</button>
+      <button class="quiz-option" data-correct>B. 3 giai đoạn: TRƯỚC – TRONG – SAU</button>
+      <button class="quiz-option">C. 4 giai đoạn</button>
+      <div class="quiz-feedback correct-fb">✅ Đúng! TRƯỚC (chuẩn bị) – TRONG (vận hành live) – SAU (đo lường).</div>
+      <div class="quiz-feedback wrong-fb">❌ Đáp án B. Quy trình chuẩn 3 giai đoạn: TRƯỚC – TRONG – SAU.</div>
+    </div>
+
+    <div class="quiz" data-quiz="2">
+      <p class="quiz-q">2. Hàng hóa phải về kho trước live tối thiểu bao lâu?</p>
+      <button class="quiz-option">A. 1 ngày</button>
+      <button class="quiz-option" data-correct>B. 3 ngày để kịp đóng gói + QC</button>
+      <button class="quiz-option">C. Về đúng ngày live cũng được</button>
+      <div class="quiz-feedback correct-fb">✅ Đúng! Tối thiểu 3 ngày để QC + đóng gói, tránh sự cố thiếu hàng.</div>
+      <div class="quiz-feedback wrong-fb">❌ Đáp án B. Live thiếu hàng = mất uy tín, KPI rớt.</div>
+    </div>
+
+    <div class="quiz" data-quiz="3">
+      <p class="quiz-q">3. Plan truyền thông nên đăng trước live bao lâu?</p>
+      <button class="quiz-option">A. 1 ngày trước</button>
+      <button class="quiz-option">B. 1 tuần trước</button>
+      <button class="quiz-option" data-correct>C. Ít nhất 2 tuần trước</button>
+      <div class="quiz-feedback correct-fb">✅ Đúng! 2 tuần để có thời gian teaser + seeding + warm up tệp khách.</div>
+      <div class="quiz-feedback wrong-fb">❌ Đáp án C. Truyền thông gấp gáp = không đủ reach, lượt xem live thấp.</div>
+    </div>
+
+    <div class="quiz" data-quiz="4">
+      <p class="quiz-q">4. Trong live, một người có nên kiêm chốt đơn + reply comment + lo kỹ thuật không?</p>
+      <button class="quiz-option">A. Có, tiết kiệm người</button>
+      <button class="quiz-option" data-correct>B. Không, mỗi vai trò chỉ làm 1 việc</button>
+      <button class="quiz-option">C. Tùy quy mô live</button>
+      <div class="quiz-feedback correct-fb">✅ Đúng! Phân vai rõ tránh sót đơn + sót comment.</div>
+      <div class="quiz-feedback wrong-fb">❌ Đáp án B. Kiêm nhiệm = chất lượng rớt cả 3 đầu việc.</div>
+    </div>
+
+    <div class="quiz" data-quiz="5">
+      <p class="quiz-q">5. Họp rút kinh nghiệm nên tổ chức trong bao lâu sau live?</p>
+      <button class="quiz-option">A. Ngay sau live</button>
+      <button class="quiz-option" data-correct>B. Trong 3-5 ngày</button>
+      <button class="quiz-option">C. 2 tuần sau</button>
+      <div class="quiz-feedback correct-fb">✅ Đúng! 3-5 ngày để có đủ số liệu doanh số + đơn hoàn + feedback khách.</div>
+      <div class="quiz-feedback wrong-fb">❌ Đáp án B. Quá nhanh thì thiếu số liệu, quá lâu thì quên chi tiết.</div>
+    </div>
+
+    <div class="quiz-score" id="quizScore" style="display:none"></div>
+
+    <h2 style="margin-top:3rem">🖼️ Gallery sơ đồ (in A3)</h2>
+    <p>In A3 dán phòng vận hành live cho team xem nhanh.</p>
+    <div class="gallery-grid" id="gallery"></div>
+  </section>
+
+  <div class="step-actions">
+    <button id="prevBtn" disabled>← Bước trước</button>
+    <button id="nextBtn">Bước tiếp →</button>
+  </div>
+</div>
+<footer class="site-footer">Quy trình tổ chức 1 phiên Megalive — 2026-05-23</footer>
+
+<div class="svg-modal" id="svgModal" onclick="if(event.target===this)closeSvgModal()">
+  <button class="svg-modal-close" onclick="closeSvgModal()">×</button>
+  <div class="svg-modal-content" id="svgModalContent"></div>
+  <div class="svg-modal-hint">Bấm × hoặc vùng tối để đóng · Vuốt để xem hết sơ đồ</div>
+</div>
+
+<script>
+const themeBtn=document.getElementById('themeToggle');
+function setTheme(t){document.documentElement.setAttribute('data-theme',t);themeBtn.textContent=t==='dark'?'🌙':'☀️';try{localStorage.setItem('theme',t)}catch(e){}}
+themeBtn.addEventListener('click',()=>setTheme(document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark'));
+try{const s=localStorage.getItem('theme');if(s)setTheme(s);else if(window.matchMedia('(prefers-color-scheme:dark)').matches)setTheme('dark')}catch(e){}
+
+const stepTitles=["Tổng quan","TRƯỚC live","TRONG live","SAU live + Checklist","Quiz + Gallery"];
+const totalSteps=stepTitles.length;let currentStep=1;
+const stepNav=document.getElementById('stepNav');
+const progressFill=document.getElementById('progressFill');
+const progressLabel=document.getElementById('progressLabel');
+const prevBtn=document.getElementById('prevBtn');const nextBtn=document.getElementById('nextBtn');
+stepTitles.forEach((title,i)=>{const btn=document.createElement('button');btn.innerHTML=`<span class="step-num-tag">Bước ${i+1}</span>${title}`;btn.addEventListener('click',()=>goToStep(i+1));if(i===0)btn.classList.add('active');stepNav.appendChild(btn);});
+function goToStep(n){if(n<1||n>totalSteps)return;document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));document.querySelector(`.step[data-step="${n}"]`).classList.add('active');document.querySelectorAll('.step-nav button').forEach((b,i)=>b.classList.toggle('active',i+1===n));currentStep=n;progressFill.style.width=`${(n/totalSteps)*100}%`;progressLabel.textContent=`Bước ${n} / ${totalSteps} · ${stepTitles[n-1]}`;prevBtn.disabled=n===1;nextBtn.disabled=n===totalSteps;window.scrollTo({top:0,behavior:'smooth'});}
+prevBtn.addEventListener('click',()=>goToStep(currentStep-1));
+nextBtn.addEventListener('click',()=>goToStep(currentStep+1));
+
+document.getElementById('mainChecklist')?.querySelectorAll('li').forEach(li=>{li.addEventListener('click',()=>{li.classList.toggle('checked');const total=li.closest('ul').querySelectorAll('li').length;const checked=li.closest('ul').querySelectorAll('li.checked').length;const score=li.closest('.step').querySelector('.checklist-score');if(score){score.textContent=`${checked}/${total} mục đã nắm`;if(checked===total)score.textContent+=' — 🎉';}});});
+
+let quizScore=0,quizAnswered=0,totalQuiz=document.querySelectorAll('.quiz').length;
+document.querySelectorAll('.quiz').forEach(quiz=>{const opts=quiz.querySelectorAll('.quiz-option');const cfb=quiz.querySelector('.quiz-feedback.correct-fb');const wfb=quiz.querySelector('.quiz-feedback.wrong-fb');opts.forEach(opt=>{opt.addEventListener('click',()=>{opts.forEach(o=>o.style.pointerEvents='none');quizAnswered++;if(opt.hasAttribute('data-correct')){opt.classList.add('correct');quizScore++;cfb?.classList.add('show');}else{opt.classList.add('wrong');quiz.querySelector('[data-correct]')?.classList.add('correct');wfb?.classList.add('show');}if(quizAnswered===totalQuiz){const el=document.getElementById('quizScore');if(el){el.style.display='block';el.textContent=`🎯 Điểm: ${quizScore}/${totalQuiz}`;if(quizScore===totalQuiz)el.textContent+=' — Hoàn hảo! 🏆';else if(quizScore>=totalQuiz*.6)el.textContent+=' — Khá tốt 👍';else el.textContent+=' — Cần ôn lại 📖';}}});});});
+
+function openSvgModal(svg){const modal=document.getElementById('svgModal');const content=document.getElementById('svgModalContent');content.innerHTML='';const clone=svg.cloneNode(true);clone.removeAttribute('width');clone.removeAttribute('height');content.appendChild(clone);modal.classList.add('open');document.body.style.overflow='hidden';}
+function closeSvgModal(){document.getElementById('svgModal').classList.remove('open');document.body.style.overflow='';}
+document.querySelectorAll('.diagram-wrap').forEach(dw=>{const svg=dw.querySelector('svg');if(svg){dw.addEventListener('click',e=>{if(e.target.closest('.gallery-item'))return;openSvgModal(svg);});}});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeSvgModal();});
+
+const gallery=document.getElementById('gallery');
+if(gallery){document.querySelectorAll('.diagram-wrap').forEach((dw,i)=>{const item=document.createElement('div');item.className='gallery-item';const cap=dw.querySelector('.diagram-caption')?.textContent||`Sơ đồ ${i+1}`;item.innerHTML=`<h4>${cap}</h4>`;const svg=dw.querySelector('svg');if(svg)item.appendChild(svg.cloneNode(true));gallery.appendChild(item);});}
+</script>
+</body>
+</html>
