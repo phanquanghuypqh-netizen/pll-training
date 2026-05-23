@@ -1,0 +1,1183 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training QT-TK01 — Thiết kế PLL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,700;9..144,900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg:#FAF4EE; --bg-soft:#FFFFFF; --bg-card:#FFFFFF; --bg-accent:#F5E6DD;
+  --text:#2A1F14; --text-soft:#5C4A3A; --text-muted:#8A7560;
+  --terra:#D97757; --terra-2:#C2604A; --terra-3:#E89B7E; --terra-bg:#F5E6DD;
+  --green-ok:#2E8B57; --red-warn:#D04A2C; --yellow-cau:#C68F1E; --purple:#7B5FB5;
+  --border:#E8D4C4;
+  --shadow: 0 1px 3px rgba(217,119,87,0.08), 0 8px 24px rgba(217,119,87,0.08);
+  --shadow-strong: 0 4px 12px rgba(194,96,74,0.15), 0 16px 40px rgba(194,96,74,0.12);
+}
+[data-theme="dark"] {
+  --bg:#1A1410; --bg-soft:#221A14; --bg-card:#2A1F18; --bg-accent:#3A2A1E;
+  --text:#FFF1DD; --text-soft:#E8D4BA; --text-muted:#A89478;
+  --terra:#E89B7E; --terra-2:#D97757; --terra-3:#A85838; --terra-bg:#3D2A1B;
+  --green-ok:#5BB87E; --red-warn:#FF7A55; --yellow-cau:#E8B855; --purple:#9C7FD5;
+  --border:#3D2D20;
+  --shadow: 0 1px 3px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.3);
+}
+[data-theme="dark"] .diagram-wrap svg { filter: brightness(0.92) contrast(1.05); }
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;transition:background .25s,color .25s}
+h1,h2,h3,h4{font-family:'Fraunces','Playfair Display',Georgia,serif;color:var(--text);margin:0 0 .4em}
+
+header.hero{
+  background:linear-gradient(135deg,var(--terra) 0%,var(--terra-2) 100%);
+  color:#fff;padding:48px 24px 56px;text-align:center;position:relative
+}
+header.hero h1{color:#fff;font-size:36px;font-weight:700;margin:0 0 8px;letter-spacing:-0.5px}
+header.hero p.sub{color:#fff;opacity:.92;font-size:17px;margin:0 0 16px}
+.header-meta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;font-size:13px}
+.header-meta span{background:rgba(255,255,255,0.18);padding:5px 12px;border-radius:14px;backdrop-filter:blur(4px)}
+
+.theme-toggle{position:absolute;top:18px;right:18px;background:rgba(255,255,255,0.2);border:0;color:#fff;font-size:18px;width:40px;height:40px;border-radius:50%;cursor:pointer;backdrop-filter:blur(4px)}
+.theme-toggle:hover{background:rgba(255,255,255,0.3)}
+
+.progress-wrap{position:sticky;top:0;background:var(--bg-soft);border-bottom:1px solid var(--border);z-index:50;padding:8px 16px}
+.progress-bar{background:var(--bg-accent);height:6px;border-radius:3px;overflow:hidden}
+.progress-fill{background:linear-gradient(90deg,var(--terra),var(--terra-2));height:100%;width:11%;transition:width .3s}
+.progress-label{font-size:12px;color:var(--text-muted);margin-top:4px;text-align:center}
+
+.container{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+.intro-box{background:var(--bg-accent);border-left:4px solid var(--terra);padding:16px 20px;border-radius:8px;margin:0 0 24px;font-size:15px}
+.intro-box strong{color:var(--terra-2)}
+
+.step-nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 28px;border-bottom:1px solid var(--border);padding-bottom:14px}
+.step-nav button{background:var(--bg-card);border:1px solid var(--border);color:var(--text-soft);padding:8px 12px;border-radius:8px;cursor:pointer;font-family:inherit;font-size:13px;font-weight:500;display:flex;flex-direction:column;align-items:flex-start;line-height:1.2;min-width:90px;transition:all .15s}
+.step-nav button .step-num{font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;font-weight:600;margin-bottom:2px}
+.step-nav button:hover{border-color:var(--terra);color:var(--terra)}
+.step-nav button.active{background:var(--terra);color:#fff;border-color:var(--terra)}
+.step-nav button.active .step-num{color:rgba(255,255,255,0.85)}
+
+.step{display:none;animation:fadeIn .25s}
+.step.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+.step h2{font-size:28px;color:var(--terra-2);border-bottom:2px solid var(--terra-bg);padding-bottom:8px}
+.step h3{font-size:18px;color:var(--text);margin-top:24px}
+.step p{font-size:15px;color:var(--text-soft);margin:.6em 0}
+.step ul, .step ol{padding-left:22px;color:var(--text-soft)}
+.step li{margin:.3em 0}
+
+.callout{padding:14px 18px;border-radius:10px;margin:14px 0;font-size:14px;border-left:4px solid}
+.callout.tip{background:var(--terra-bg);border-color:var(--terra);color:var(--text)}
+.callout.warn{background:#FFF5E0;border-color:var(--yellow-cau);color:var(--text)}
+.callout.ok{background:#E6F4EB;border-color:var(--green-ok);color:var(--text)}
+.callout.note{background:var(--bg-accent);border-color:var(--purple);color:var(--text)}
+[data-theme="dark"] .callout.warn{background:#3a2f15}
+[data-theme="dark"] .callout.ok{background:#1d3a2a}
+
+table.t-info{width:100%;border-collapse:collapse;margin:14px 0;font-size:14px;background:var(--bg-card);border-radius:10px;overflow:hidden;box-shadow:var(--shadow)}
+table.t-info th{background:var(--terra);color:#fff;padding:10px 12px;text-align:left;font-weight:600}
+table.t-info td{padding:10px 12px;border-top:1px solid var(--border);color:var(--text-soft);vertical-align:top}
+table.t-info tr:nth-child(even) td{background:rgba(217,119,87,0.04)}
+
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:16px 0}
+.compare .col{padding:14px 16px;border-radius:10px}
+.compare .col.right{background:#E6F4EB;border-left:4px solid var(--green-ok)}
+.compare .col.wrong{background:#FCEAE5;border-left:4px solid var(--red-warn)}
+[data-theme="dark"] .compare .col.right{background:#1d3a2a}
+[data-theme="dark"] .compare .col.wrong{background:#3a1f17}
+
+.diagram-wrap{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:16px;margin:18px 0;box-shadow:var(--shadow);cursor:zoom-in;transition:transform .15s}
+.diagram-wrap:hover{transform:translateY(-2px);box-shadow:var(--shadow-strong)}
+.diagram-wrap svg{width:100%;height:auto;display:block}
+.diagram-caption{text-align:center;color:var(--text-muted);font-size:13px;margin-top:8px;font-weight:500}
+
+.checklist{list-style:none;padding:0;margin:14px 0}
+.checklist li{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;background:var(--bg-card);border:1px solid var(--border);border-radius:8px;margin:6px 0;cursor:pointer;transition:all .15s;font-size:14px}
+.checklist li:hover{border-color:var(--terra)}
+.checklist li.checked{background:#E6F4EB;border-color:var(--green-ok);color:var(--text-muted);text-decoration:line-through}
+[data-theme="dark"] .checklist li.checked{background:#1d3a2a}
+.checklist .cbox{font-size:18px;color:var(--terra);font-weight:700;line-height:1}
+.checklist li.checked .cbox{color:var(--green-ok)}
+.checklist li.checked .cbox::before{content:"☑"}
+.checklist li.checked .cbox{font-size:0}
+.checklist li.checked .cbox::before{font-size:18px}
+.checklist-score{padding:14px;background:var(--terra-bg);border-radius:8px;margin-top:12px;font-size:14px;color:var(--text)}
+.checklist-score span{color:var(--text-soft);font-weight:400}
+
+.quiz{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:18px 20px;margin:18px 0;box-shadow:var(--shadow)}
+.quiz-q{font-size:15px;margin-bottom:12px;color:var(--text)}
+.quiz-opts{display:flex;flex-direction:column;gap:8px}
+.quiz-option{padding:12px 14px;background:var(--bg-soft);border:1.5px solid var(--border);border-radius:8px;cursor:pointer;font-size:14px;display:flex;gap:10px;align-items:center;transition:all .15s;color:var(--text-soft)}
+.quiz-option:hover{border-color:var(--terra);background:var(--terra-bg)}
+.quiz-option .qmark{display:inline-flex;width:24px;height:24px;border-radius:50%;background:var(--terra-bg);color:var(--terra-2);font-weight:700;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.quiz-option.correct{background:#E6F4EB;border-color:var(--green-ok);color:var(--text)}
+.quiz-option.correct .qmark{background:var(--green-ok);color:#fff}
+.quiz-option.wrong{background:#FCEAE5;border-color:var(--red-warn);color:var(--text)}
+.quiz-option.wrong .qmark{background:var(--red-warn);color:#fff}
+[data-theme="dark"] .quiz-option.correct{background:#1d3a2a}
+[data-theme="dark"] .quiz-option.wrong{background:#3a1f17}
+.quiz-feedback{display:none;margin-top:12px;padding:10px 14px;background:var(--terra-bg);border-radius:8px;font-size:13px;color:var(--text)}
+.quiz-feedback.show{display:block}
+.quiz-result{padding:16px;background:var(--terra-bg);border-radius:10px;font-size:15px;text-align:center;margin-top:14px;font-weight:600;color:var(--text)}
+
+.step-actions{display:flex;justify-content:space-between;gap:10px;margin-top:32px;padding-top:18px;border-top:1px solid var(--border)}
+.step-actions button{background:var(--terra);color:#fff;border:0;padding:11px 22px;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s}
+.step-actions button:hover:not(:disabled){background:var(--terra-2)}
+.step-actions button:disabled{opacity:.4;cursor:not-allowed}
+
+.gallery-grid{display:grid;grid-template-columns:1fr;gap:14px;margin-top:14px}
+
+footer{text-align:center;padding:24px;color:var(--text-muted);font-size:13px;border-top:1px solid var(--border);margin-top:32px}
+
+/* Modal zoom */
+.modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:100;justify-content:center;align-items:center;padding:20px;cursor:zoom-out}
+.modal.show{display:flex}
+.modal-content{background:#fff;border-radius:12px;max-width:95vw;max-height:95vh;overflow:auto;padding:18px}
+.modal-content svg{width:100%;height:auto;display:block;min-width:600px}
+.modal-close{position:absolute;top:18px;right:24px;color:#fff;font-size:36px;cursor:pointer;background:none;border:0}
+
+@media (max-width:720px) {
+  header.hero{padding:32px 16px 40px}
+  header.hero h1{font-size:26px}
+  .container{padding:16px 14px 60px}
+  .step h2{font-size:22px}
+  .step-nav button{min-width:0;font-size:12px;padding:6px 10px}
+  .compare{grid-template-columns:1fr}
+  table.t-info{font-size:12px}
+  table.t-info th, table.t-info td{padding:7px 8px}
+  .modal-content svg{min-width:0}
+}
+@media print {
+  .step{display:block !important;page-break-after:always}
+  .step-nav,.step-actions,.theme-toggle,.progress-wrap{display:none !important}
+}
+</style>
+</head>
+<body>
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">☀️</button>
+<header class="hero">
+  <h1>QT-TK01 — Thiết kế sản phẩm PLL</h1>
+  <p class="sub">Training tự học cho NV phòng Thiết kế · 6 bước · 3 gate duyệt</p>
+  <div class="header-meta">
+    <span>⏱️ ~15 phút</span>
+    <span>📚 9 bước học</span>
+    <span>🎯 Quiz 5 câu</span>
+    <span>✅ Checklist 14 mục</span>
+  </div>
+</header>
+
+<div class="progress-wrap">
+  <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+  <div class="progress-label" id="progressLabel">Bước 1 / 9 · Tổng quan</div>
+</div>
+
+<div class="container">
+  <div class="intro-box">
+    <strong>Đọc trong 30 giây:</strong> QT-TK01 là quy trình thiết kế sản phẩm PLL chạy theo mùa BST (T1 hè / T7 đông).
+    6 bước chính, 7 lane actor, 3 gate duyệt. Sau khi học xong bạn sẽ biết: ai duyệt gate nào,
+    khi KO duyệt thì loop về đâu, và 13 cột T-sheet để theo dõi mẫu.
+  </div>
+
+  <nav class="step-nav" id="stepNav"></nav>
+
+  <section class="step active" data-step="1">
+    <h2>Tổng quan QT-TK01</h2>
+    <p>Quy trình thiết kế sản phẩm cho thương hiệu PLL có <strong>6 bước</strong> chính, đi qua <strong>7 actor (lane)</strong>, và phải vượt qua <strong>3 gate duyệt</strong> trước khi vào sản xuất.</p>
+
+    <h3>Bảng tóm tắt 6 bước</h3>
+    <table class="t-info">
+      <thead><tr><th>Bước</th><th>Tên</th><th>Actor</th><th>SLA</th><th>Gate</th></tr></thead>
+      <tbody>
+        <tr><td>B1</td><td>Mục tiêu</td><td>QL Nhãn</td><td>1 ngày</td><td>—</td></tr>
+        <tr><td>B2</td><td>Moodboard</td><td>Team TK</td><td>1-3 ngày</td><td><strong style="color:var(--terra)">Gate 1</strong></td></tr>
+        <tr><td>B3</td><td>Phân nhóm SP</td><td>QL TK + Team TK</td><td>2-4 ngày</td><td><strong style="color:var(--terra)">Gate 2</strong></td></tr>
+        <tr><td>B4</td><td>Ra rập & May mẫu</td><td>NV Rập + NV May</td><td>5-10 ngày</td><td>Sub-gate kỹ thuật</td></tr>
+        <tr><td>B5</td><td>KCS trước duyệt</td><td>Team TK + QL Nhãn</td><td>1-2 ngày</td><td>—</td></tr>
+        <tr><td>B6</td><td>Hội đồng duyệt (Final)</td><td>Hội đồng 5 người</td><td>1 ngày</td><td><strong style="color:var(--terra)">Gate 3</strong></td></tr>
+      </tbody>
+    </table>
+
+    <div class="diagram-wrap" data-zoom>
+      <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow 6 bước QT-TK01">
+<defs>
+  <filter id="sh1" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#D97757"/>
+  </marker>
+  <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#D04A2C"/>
+  </marker>
+</defs>
+<style>
+.title{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.lbl{font:600 14px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.sub{font:500 12px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.actor{font:500 12px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.gate{font:700 13px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.loop{font:600 12px Inter,sans-serif;fill:#D04A2C;text-anchor:middle}
+</style>
+<text x="500" y="32" class="title" text-anchor="middle">QT-TK01 — 6 bước + 3 gate duyệt</text>
+
+<!-- Steps -->
+<g filter="url(#sh1)">
+  <rect x="30" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="95" y="108" class="lbl">B1</text>
+  <text x="95" y="128" class="sub">Mục tiêu</text>
+  <text x="95" y="170" class="actor">QL Nhãn</text>
+  <text x="95" y="186" class="actor">1 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="190" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="255" y="108" class="lbl">B2</text>
+  <text x="255" y="128" class="sub">Moodboard</text>
+  <text x="255" y="170" class="actor">Team TK · 1-3 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="350" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="415" y="108" class="lbl">B3</text>
+  <text x="415" y="128" class="sub">Phân nhóm SP</text>
+  <text x="415" y="170" class="actor">QL TK · 2-4 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="510" y="80" width="140" height="70" rx="14" fill="#D97757"/>
+  <text x="580" y="108" class="lbl">B4</text>
+  <text x="580" y="128" class="sub">Ra rập + May mẫu</text>
+  <text x="580" y="170" class="actor">NV Rập + May · 5-10 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="680" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="745" y="108" class="lbl">B5</text>
+  <text x="745" y="128" class="sub">KCS</text>
+  <text x="745" y="170" class="actor">Team TK · 1-2 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="840" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="905" y="108" class="lbl">B6</text>
+  <text x="905" y="128" class="sub">Hội đồng duyệt</text>
+  <text x="905" y="170" class="actor">5 người · 1 ngày</text>
+</g>
+
+<!-- Arrows main flow -->
+<line x1="160" y1="115" x2="186" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="320" y1="115" x2="346" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="480" y1="115" x2="506" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="650" y1="115" x2="676" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="810" y1="115" x2="836" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+
+<!-- 3 Gates -->
+<g filter="url(#sh1)">
+  <circle cx="255" cy="240" r="26" fill="#C68F1E"/>
+  <text x="255" y="246" class="gate">G1</text>
+</g>
+<g filter="url(#sh1)">
+  <circle cx="415" cy="240" r="26" fill="#C68F1E"/>
+  <text x="415" y="246" class="gate">G2</text>
+</g>
+<g filter="url(#sh1)">
+  <circle cx="905" cy="240" r="26" fill="#C68F1E"/>
+  <text x="905" y="246" class="gate">G3</text>
+</g>
+<line x1="255" y1="152" x2="255" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="415" y1="152" x2="415" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="905" y1="152" x2="905" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+
+<text x="255" y="288" class="actor">QL Nhãn</text>
+<text x="255" y="304" class="actor">duyệt</text>
+<text x="415" y="288" class="actor">QL TK</text>
+<text x="415" y="304" class="actor">duyệt</text>
+<text x="905" y="288" class="actor">Hội đồng</text>
+<text x="905" y="304" class="actor">5 người</text>
+
+<!-- Loop arrows KO duyệt -->
+<path d="M 240 266 Q 200 360 230 360 L 230 360" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 230 360 L 240 150 L 240 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="180" y="380" class="loop">G1 KO → loop B2.2</text>
+
+<path d="M 400 266 Q 360 380 390 400" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 390 400 L 400 150 L 400 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="350" y="420" class="loop">G2 KO → loop B3.3</text>
+
+<path d="M 890 266 Q 600 420 590 400" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 590 400 L 580 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="680" y="440" class="loop">G3 KO duyệt → loop B4 (mẫu 2)</text>
+
+<!-- Bottom note -->
+<rect x="30" y="445" width="940" height="28" rx="8" fill="#F5E6DD"/>
+<text x="500" y="464" class="actor" style="font-weight:600">Tỉ lệ làm lại hiện 30% → target &lt;20%. Mỗi gate KO duyệt = tốn thêm 3-7 ngày</text>
+</svg>
+      <div class="diagram-caption">📊 Sơ đồ 1: Flow 6 bước + 3 gate (đỏ = loop khi KO duyệt)</div>
+    </div>
+
+    <div class="callout tip">
+      <strong>💡 Key takeaway:</strong> Mỗi gate KO duyệt = tốn thêm 3-7 ngày cycle. Mục tiêu QT này là giảm tỉ lệ làm lại từ 30% xuống &lt;20%.
+    </div>
+
+    <h3>7 lane (actor) — ai làm gì</h3>
+    <div class="diagram-wrap" data-zoom>
+      <svg viewBox="0 0 1100 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mind Map 7 lane actor">
+<defs>
+  <filter id="sh3" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+</defs>
+<style>
+.tt{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.cn{font:700 16px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.cs{font:500 12px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.nb{font:700 13px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.nd{font:500 10px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.em{font:24px Inter,sans-serif;text-anchor:middle}
+</style>
+<text x="550" y="32" class="tt" text-anchor="middle">7 Lane — Actor &amp; Vai trò QT-TK01</text>
+
+<!-- Center -->
+<g filter="url(#sh3)">
+  <circle cx="550" cy="360" r="85" fill="#D97757"/>
+  <text x="550" y="345" class="em" fill="#fff">🎨</text>
+  <text x="550" y="378" class="cn">QT-TK01</text>
+  <text x="550" y="398" class="cs">7 lane · 6 bước</text>
+  <text x="550" y="416" class="cs">3 gate duyệt</text>
+</g>
+
+<!-- 7 nodes around center -->
+<!-- Top center: QL Nhãn -->
+<g filter="url(#sh3)">
+  <rect x="455" y="80" width="190" height="100" rx="12" fill="#FFFFFF" stroke="#7B5FB5" stroke-width="3"/>
+  <circle cx="550" cy="98" r="20" fill="#7B5FB5"/>
+  <text x="550" y="104" class="em" fill="#fff" style="font-size:18px">👔</text>
+  <text x="550" y="138" class="nb">1. QL Nhãn</text>
+  <text x="550" y="156" class="nd">Brief B1 + duyệt Gate 1</text>
+  <text x="550" y="170" class="nd">+ KCS B5</text>
+</g>
+<line x1="550" y1="180" x2="550" y2="275" stroke="#7B5FB5" stroke-width="2"/>
+
+<!-- Top Right: Team TK moodboard -->
+<g filter="url(#sh3)">
+  <rect x="800" y="160" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="3"/>
+  <circle cx="900" cy="178" r="20" fill="#D97757"/>
+  <text x="900" y="184" class="em" fill="#fff" style="font-size:18px">🎨</text>
+  <text x="900" y="218" class="nb">2. Team TK (moodboard)</text>
+  <text x="900" y="236" class="nd">B2 trend + moodboard</text>
+  <text x="900" y="250" class="nd">+ trình QL Nhãn</text>
+</g>
+<line x1="800" y1="240" x2="635" y2="320" stroke="#D97757" stroke-width="2"/>
+
+<!-- Right: QL TK + Team TK -->
+<g filter="url(#sh3)">
+  <rect x="870" y="310" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#C68F1E" stroke-width="3"/>
+  <circle cx="970" cy="328" r="20" fill="#C68F1E"/>
+  <text x="970" y="334" class="em" fill="#fff" style="font-size:18px">📋</text>
+  <text x="970" y="368" class="nb">3. QL TK + Team TK</text>
+  <text x="970" y="386" class="nd">B3 phân nhóm + Gate 2</text>
+  <text x="970" y="400" class="nd">brief, timeline, phối</text>
+</g>
+<line x1="870" y1="360" x2="635" y2="360" stroke="#C68F1E" stroke-width="2"/>
+
+<!-- Bottom Right: NV Rập -->
+<g filter="url(#sh3)">
+  <rect x="800" y="470" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#2E8B57" stroke-width="3"/>
+  <circle cx="900" cy="488" r="20" fill="#2E8B57"/>
+  <text x="900" y="494" class="em" fill="#fff" style="font-size:18px">✂️</text>
+  <text x="900" y="528" class="nb">4. NV Rập</text>
+  <text x="900" y="546" class="nd">B4.2 rập tạm</text>
+  <text x="900" y="560" class="nd">+ 4.3 mẫu thử CRM</text>
+</g>
+<line x1="800" y1="490" x2="635" y2="400" stroke="#2E8B57" stroke-width="2"/>
+
+<!-- Bottom center: NV May mẫu -->
+<g filter="url(#sh3)">
+  <rect x="455" y="555" width="190" height="100" rx="12" fill="#FFFFFF" stroke="#2E8B57" stroke-width="3"/>
+  <circle cx="550" cy="573" r="20" fill="#2E8B57"/>
+  <text x="550" y="579" class="em" fill="#fff" style="font-size:18px">🧵</text>
+  <text x="550" y="613" class="nb">5. NV May mẫu</text>
+  <text x="550" y="631" class="nd">B4.4 duyệt phom</text>
+  <text x="550" y="645" class="nd">B4.5 hoàn thiện mẫu</text>
+</g>
+<line x1="550" y1="445" x2="550" y2="555" stroke="#2E8B57" stroke-width="2"/>
+
+<!-- Bottom Left: Team TK KCS -->
+<g filter="url(#sh3)">
+  <rect x="100" y="470" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#C68F1E" stroke-width="3"/>
+  <circle cx="200" cy="488" r="20" fill="#C68F1E"/>
+  <text x="200" y="494" class="em" fill="#fff" style="font-size:18px">🔍</text>
+  <text x="200" y="528" class="nb">6. Team TK (KCS)</text>
+  <text x="200" y="546" class="nd">B5 kiểm kỹ thuật</text>
+  <text x="200" y="560" class="nd">+ kho mẫu</text>
+</g>
+<line x1="300" y1="490" x2="465" y2="400" stroke="#C68F1E" stroke-width="2"/>
+
+<!-- Left: Hội đồng -->
+<g filter="url(#sh3)">
+  <rect x="30" y="310" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D04A2C" stroke-width="3"/>
+  <circle cx="130" cy="328" r="20" fill="#D04A2C"/>
+  <text x="130" y="334" class="em" fill="#fff" style="font-size:18px">⚖️</text>
+  <text x="130" y="368" class="nb">7. Hội đồng duyệt</text>
+  <text x="130" y="386" class="nd">B6.3 Gate 3 final</text>
+  <text x="130" y="400" class="nd">5 người · biên bản</text>
+</g>
+<line x1="230" y1="360" x2="465" y2="360" stroke="#D04A2C" stroke-width="2"/>
+
+<!-- Top Left: Team TK Moodboard helper note -->
+<g filter="url(#sh3)">
+  <rect x="100" y="160" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="3"/>
+  <circle cx="200" cy="178" r="20" fill="#D97757"/>
+  <text x="200" y="184" class="em" fill="#fff" style="font-size:18px">💡</text>
+  <text x="200" y="218" class="nb">Note: PM dùng chung</text>
+  <text x="200" y="236" class="nd">CRM nội bộ + Panchat</text>
+  <text x="200" y="250" class="nd">cho mọi actor</text>
+</g>
+<line x1="300" y1="240" x2="465" y2="320" stroke="#D97757" stroke-width="2" stroke-dasharray="4 3"/>
+
+<!-- Bottom legend -->
+<g>
+  <rect x="200" y="685" width="700" height="30" rx="6" fill="#F5E6DD"/>
+  <text x="550" y="704" class="nb" style="font-weight:600">🟣 QL · 🟠 TK · 🟡 QL+TK · 🟢 Sản xuất · 🔴 Hội đồng</text>
+</g>
+</svg>
+      <div class="diagram-caption">📊 Sơ đồ 2: Mind map 7 lane actor + vai trò</div>
+    </div>
+  </section>
+
+  <section class="step" data-step="2">
+    <h2>B1 — Mục tiêu</h2>
+    <p><strong>Actor:</strong> QL Nhãn · <strong>SLA:</strong> 1 ngày · <strong>PM:</strong> CRM nội bộ</p>
+    <p>QL Nhãn khởi động cycle BST bằng việc brief mục tiêu xuống Team TK.</p>
+
+    <h3>Việc QL Nhãn cần làm</h3>
+    <ul>
+      <li><strong>Brief ban đầu:</strong> doanh số kỳ trước, dự báo, nhu cầu thị trường, yêu cầu SP</li>
+      <li><strong>Xác định KPI BST:</strong> số SKU, tỉ lệ loại SP (top/bottom/váy/outerwear), mục tiêu doanh số</li>
+      <li><strong>Thống nhất tiêu chí duyệt</strong> mẫu (phom, chất, giá thành) + cách đo lường</li>
+      <li><strong>Bàn giao Team TK</strong> qua CRM + thông báo Panchat khởi động</li>
+    </ul>
+
+    <div class="callout note">
+      <strong>📝 Note:</strong> Mọi mẫu đều bắt đầu ở stage B1 trong T-sheet (cột "Stage hiện tại"). Trạng thái khởi tạo = "Đang làm".
+    </div>
+  </section>
+
+  <section class="step" data-step="3">
+    <h2>B2 — Moodboard · Gate 1</h2>
+    <p><strong>Actor:</strong> Team TK · <strong>SLA:</strong> 1-3 ngày · <strong>Gate 1:</strong> QL Nhãn duyệt cuối bước</p>
+
+    <h3>4 sub-step</h3>
+    <ol>
+      <li><strong>2.1</strong> Nghiên cứu xu hướng / trend (fashion week, social, đối thủ)</li>
+      <li><strong>2.2</strong> Lên moodboard (color palette ≥3 màu, style direction, ≥5 hình tham chiếu)</li>
+      <li><strong>2.3</strong> Trình moodboard (Panchat tag QL Nhãn, chuẩn bị buổi present)</li>
+      <li><strong>2.4</strong> Duyệt moodboard → <strong>GATE 1</strong></li>
+    </ol>
+
+    <div class="compare">
+      <div class="col right">
+        <strong>✅ Gate 1 — Duyệt</strong>
+        <p style="margin:.4em 0">→ Tiến sang B3 phân nhóm SP. Cập nhật stage trên T-sheet.</p>
+      </div>
+      <div class="col wrong">
+        <strong>❌ Gate 1 — KO duyệt</strong>
+        <p style="margin:.4em 0">→ <strong>Loop về 2.2</strong> để sửa moodboard. Số lần làm lại +1 trên T-sheet.</p>
+      </div>
+    </div>
+
+    <div class="callout warn">
+      <strong>⚠️ Lưu ý:</strong> KO duyệt Gate 1 chỉ loop về sửa moodboard, KHÔNG quay về B1 brief lại. Trừ khi mục tiêu thay đổi hẳn.
+    </div>
+  </section>
+
+  <section class="step" data-step="4">
+    <h2>B3 — Phân nhóm SP · Gate 2</h2>
+    <p><strong>Actor:</strong> QL TK + Team TK · <strong>SLA:</strong> 2-4 ngày · <strong>Gate 2:</strong> QL TK duyệt cuối bước</p>
+
+    <h3>4 sub-step</h3>
+    <ol>
+      <li><strong>3.1</strong> QL TK brief ý tưởng cho team — phân tích moodboard đã duyệt, định hướng từng SKU</li>
+      <li><strong>3.2</strong> Xây timeline, chia việc qua Panchat — giao SKU cho NV TK chính</li>
+      <li><strong>3.3</strong> Lên phối theo idea + số lượng QL yêu cầu</li>
+      <li><strong>3.4</strong> Duyệt phân nhóm → <strong>GATE 2</strong></li>
+    </ol>
+
+    <div class="compare">
+      <div class="col right">
+        <strong>✅ Gate 2 — Duyệt</strong>
+        <p style="margin:.4em 0">→ Sang B4 ra rập + may mẫu.</p>
+      </div>
+      <div class="col wrong">
+        <strong>❌ Gate 2 — KO duyệt</strong>
+        <p style="margin:.4em 0">→ <strong>Loop về 3.3</strong>: sửa phối → cập nhật CRM → đi chợ vải → chuẩn bị NPL.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" data-step="5">
+    <h2>B4 — Ra rập & May mẫu</h2>
+    <p><strong>Actor:</strong> NV Rập + NV May mẫu · <strong>SLA:</strong> 5-10 ngày · <strong>PM:</strong> CRM</p>
+    <p>Đây là bước dài nhất, có 2 sub-gate kỹ thuật trước khi đi tiếp B5.</p>
+
+    <table class="t-info">
+      <thead><tr><th>Sub</th><th>Việc</th><th>Actor</th></tr></thead>
+      <tbody>
+        <tr><td>4.1</td><td>Chuẩn bị bill vải + mẫu vải + thông tin CRM</td><td><strong>NV TK</strong> (không phải NV Rập!)</td></tr>
+        <tr><td>4.2</td><td>Lên rập tạm thời</td><td>NV Rập</td></tr>
+        <tr><td>4.3</td><td>Chuyển mẫu thử lên CRM</td><td>NV Rập</td></tr>
+        <tr><td>4.4</td><td>Duyệt phom dáng, vật liệu (sub-gate)</td><td>NV May mẫu</td></tr>
+        <tr><td>4.5</td><td>May hoàn thiện mẫu 1, chuyển CRM</td><td>NV May mẫu</td></tr>
+      </tbody>
+    </table>
+
+    <div class="callout warn">
+      <strong>⚠️ Loop chỗ này:</strong> 4.4 KO → loop chỉnh rập. 4.5 KO → loop sửa rập + sửa mẫu. KHÔNG quay về B3.
+    </div>
+  </section>
+
+  <section class="step" data-step="6">
+    <h2>B5 — KCS trước duyệt</h2>
+    <p><strong>Actor:</strong> Team TK + QL Nhãn · <strong>SLA:</strong> 1-2 ngày · <strong>PM:</strong> CRM</p>
+
+    <h3>Việc KCS</h3>
+    <ul>
+      <li>QC nhận mẫu — kiểm <strong>kỹ thuật</strong> (đường may, phom, đo size)</li>
+      <li>Kiểm <strong>truyền thông</strong> (chất, màu khớp moodboard không)</li>
+      <li>Đánh giá mẫu + bill thông tin có đầy đủ chưa</li>
+    </ul>
+
+    <div class="callout warn">
+      <strong>📉 KPI quan trọng:</strong> Tỉ lệ làm lại tại B5 hiện tại là <strong style="color:var(--red-warn);font-size:18px">30%</strong>. Target QT này là kéo xuống &lt;20%.
+    </div>
+
+    <div class="compare">
+      <div class="col right">
+        <strong>✅ KCS Đạt</strong>
+        <p style="margin:.4em 0">→ Sang B6 Hội đồng duyệt cuối.</p>
+      </div>
+      <div class="col wrong">
+        <strong>❌ KCS KO Đạt</strong>
+        <p style="margin:.4em 0">→ Chuyển xưởng xử lý hàng KO duyệt + đánh dấu trên hệ thống.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="step" data-step="7">
+    <h2>B6 — Hội đồng duyệt · Gate 3</h2>
+    <p><strong>Actor:</strong> Hội đồng duyệt mẫu (5 người) · <strong>SLA:</strong> 1 ngày · <strong>Gate 3:</strong> Final gate</p>
+
+    <h3>Sub-steps</h3>
+    <ul>
+      <li><strong>6.1</strong> Tập trung buổi duyệt — set lịch, mời 5 thành viên</li>
+      <li><strong>6.2</strong> Thông báo Panchat — public mã mẫu trình duyệt</li>
+      <li><strong>6.3</strong> Hội đồng duyệt mẫu → <strong>GATE 3</strong> · Output: <em>biên bản duyệt mẫu (5 chữ ký)</em></li>
+      <li><strong>6.3.1</strong> Chỉnh sửa cuối trước sản xuất</li>
+      <li><strong>6.4</strong> Hoàn thiện bảng vải + bill SP final</li>
+    </ul>
+
+    <h3>Gate 3 ra 3 phán quyết</h3>
+    <div class="diagram-wrap" data-zoom>
+      <svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision Tree Gate 3">
+<defs>
+  <filter id="sh2" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+  <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#5C4A3A"/>
+  </marker>
+</defs>
+<style>
+.t{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.qt{font:700 14px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.lb{font:600 14px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.det{font:500 12px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.edge{font:600 12px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.tip{font:500 12px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+</style>
+<text x="500" y="32" class="t" text-anchor="middle">GATE 3 — Hội đồng duyệt (B6.3): 3 nhánh</text>
+
+<g filter="url(#sh2)">
+  <ellipse cx="500" cy="90" rx="160" ry="38" fill="#D97757"/>
+  <text x="500" y="86" class="lb">Hội đồng 5 người duyệt</text>
+  <text x="500" y="106" class="lb" style="font-size:12px">Output: biên bản duyệt mẫu</text>
+</g>
+
+<g filter="url(#sh2)">
+  <rect x="370" y="160" width="260" height="60" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="2"/>
+  <text x="500" y="186" class="qt">❓ Mẫu có đạt tiêu chí?</text>
+  <text x="500" y="206" class="det">Phom · chất · biên bản · bill vải</text>
+</g>
+<line x1="500" y1="128" x2="500" y2="158" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+
+<!-- 3 branches -->
+<line x1="430" y1="220" x2="200" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<line x1="500" y1="222" x2="500" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<line x1="570" y1="220" x2="800" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<text x="270" y="250" class="edge">Duyệt ✅</text>
+<text x="500" y="248" class="edge">Sửa ⚠️</text>
+<text x="730" y="250" class="edge">KO duyệt ❌</text>
+
+<g filter="url(#sh2)">
+  <rect x="60" y="282" width="280" height="100" rx="12" fill="#2E8B57"/>
+  <text x="200" y="312" class="lb">Duyệt</text>
+  <text x="200" y="334" class="lb" style="font-size:12px">→ 6.3.1 chỉnh cuối</text>
+  <text x="200" y="354" class="lb" style="font-size:12px">→ 6.4 bill SP</text>
+  <text x="200" y="372" class="lb" style="font-size:12px">→ Sản xuất</text>
+</g>
+<g filter="url(#sh2)">
+  <rect x="360" y="282" width="280" height="100" rx="12" fill="#C68F1E"/>
+  <text x="500" y="312" class="lb">Sửa</text>
+  <text x="500" y="334" class="lb" style="font-size:12px">→ 6.3.1 chỉnh sửa</text>
+  <text x="500" y="354" class="lb" style="font-size:12px">theo điểm hội đồng chỉ ra</text>
+  <text x="500" y="372" class="lb" style="font-size:12px">→ trình lại / sản xuất</text>
+</g>
+<g filter="url(#sh2)">
+  <rect x="660" y="282" width="280" height="100" rx="12" fill="#D04A2C"/>
+  <text x="800" y="312" class="lb">KO duyệt</text>
+  <text x="800" y="334" class="lb" style="font-size:12px">→ loop về B4 (làm mẫu 2)</text>
+  <text x="800" y="354" class="lb" style="font-size:12px">→ Truyền thông ghi lý do</text>
+  <text x="800" y="372" class="lb" style="font-size:12px">→ đánh dấu hệ thống</text>
+</g>
+
+<!-- Bottom tip pill -->
+<g filter="url(#sh2)">
+  <rect x="200" y="430" width="600" height="60" rx="30" fill="#F5E6DD"/>
+  <text x="500" y="455" class="tip" style="font-weight:700">💡 Quy tắc nhớ</text>
+  <text x="500" y="478" class="tip">Duyệt = đi tiếp · Sửa = chỉnh nhỏ tại 6.3.1 · KO duyệt = quay B4 làm lại từ rập</text>
+</g>
+</svg>
+      <div class="diagram-caption">📊 Sơ đồ 3: Decision Tree Gate 3 — 3 nhánh phán quyết</div>
+    </div>
+
+    <div class="callout tip">
+      <strong>💡 Phân biệt Sửa vs KO duyệt:</strong> "Sửa" chỉ chỉnh nhỏ tại 6.3.1 (không quay B4). "KO duyệt" = loop hẳn về B4 làm mẫu 2 + Truyền thông ghi lý do.
+    </div>
+  </section>
+
+  <section class="step" data-step="8">
+    <h2>Quiz — 5 câu kiểm tra hiểu bài</h2>
+    <p>Click chọn đáp án để xem feedback. Mỗi câu chỉ trả lời 1 lần.</p>
+    
+<div class="quiz" data-q="1">
+  <div class="quiz-q"><strong>Câu 1.</strong> Gate 1 (duyệt moodboard) do ai quyết định?</div>
+  <div class="quiz-opts"><div class="quiz-option"><span class="qmark">A</span>QL TK</div>
+<div class="quiz-option" data-correct="1"><span class="qmark">B</span>QL Nhãn</div>
+<div class="quiz-option"><span class="qmark">C</span>Hội đồng 5 người</div>
+<div class="quiz-option"><span class="qmark">D</span>Team TK tự duyệt</div>
+</div>
+  <div class="quiz-feedback">💡 Gate 1 là QL Nhãn duyệt sau khi Team TK trình moodboard ở B2.3. QL TK chỉ duyệt Gate 2 (phân nhóm).</div>
+</div>
+
+<div class="quiz" data-q="2">
+  <div class="quiz-q"><strong>Câu 2.</strong> Khi Hội đồng KO duyệt ở Gate 3, mẫu loop về đâu?</div>
+  <div class="quiz-opts"><div class="quiz-option"><span class="qmark">A</span>Về B2 moodboard</div>
+<div class="quiz-option"><span class="qmark">B</span>Về B3 phân nhóm</div>
+<div class="quiz-option" data-correct="1"><span class="qmark">C</span>Về B4 ra rập & may mẫu (làm mẫu 2)</div>
+<div class="quiz-option"><span class="qmark">D</span>Hủy luôn</div>
+</div>
+  <div class="quiz-feedback">💡 KO duyệt Gate 3 = loop về B4 để làm mẫu 2. Team Truyền thông ghi lại lý do để rút kinh nghiệm.</div>
+</div>
+
+<div class="quiz" data-q="3">
+  <div class="quiz-q"><strong>Câu 3.</strong> Tỉ lệ làm lại 30% nghĩa là gì và đang ở stage nào của QT?</div>
+  <div class="quiz-opts"><div class="quiz-option"><span class="qmark">A</span>30% mẫu bị KO duyệt ở Gate 1 moodboard</div>
+<div class="quiz-option" data-correct="1"><span class="qmark">B</span>30% mẫu phải làm lại sau khi qua B5 KCS</div>
+<div class="quiz-option"><span class="qmark">C</span>30% NV TK bị đánh giá thấp</div>
+<div class="quiz-option"><span class="qmark">D</span>30% bill vải bị sai</div>
+</div>
+  <div class="quiz-feedback">💡 Số 30% là KPI tại B5 KCS — 30% mẫu sau khi KCS phải làm lại. Target của QT này là kéo xuống <20%.</div>
+</div>
+
+<div class="quiz" data-q="4">
+  <div class="quiz-q"><strong>Câu 4.</strong> Khi Gate 3 ra phán quyết 'Sửa' (không phải Duyệt, không phải KO duyệt), bước tiếp theo là gì?</div>
+  <div class="quiz-opts"><div class="quiz-option"><span class="qmark">A</span>Loop về B4 làm mẫu 2</div>
+<div class="quiz-option" data-correct="1"><span class="qmark">B</span>Sang 6.3.1 chỉnh sửa cuối theo điểm hội đồng yêu cầu</div>
+<div class="quiz-option"><span class="qmark">C</span>Đi sản xuất luôn</div>
+<div class="quiz-option"><span class="qmark">D</span>Loop về B2 moodboard</div>
+</div>
+  <div class="quiz-feedback">💡 'Sửa' và 'Duyệt' đều đi qua 6.3.1 — khác là 'Sửa' phải chỉnh theo điểm hội đồng chỉ ra trước khi sản xuất.</div>
+</div>
+
+<div class="quiz" data-q="5">
+  <div class="quiz-q"><strong>Câu 5.</strong> Đầu B4 ai chuẩn bị bill vải + mẫu vải + thông tin CRM (bước 4.1)?</div>
+  <div class="quiz-opts"><div class="quiz-option"><span class="qmark">A</span>NV Rập</div>
+<div class="quiz-option"><span class="qmark">B</span>NV May mẫu</div>
+<div class="quiz-option" data-correct="1"><span class="qmark">C</span>NV TK (Team TK)</div>
+<div class="quiz-option"><span class="qmark">D</span>QL TK</div>
+</div>
+  <div class="quiz-feedback">💡 Bước 4.1 do NV TK chuẩn bị input cho NV Rập. NV Rập chỉ bắt đầu lên rập tạm từ 4.2.</div>
+</div>
+    <div class="quiz-result" id="quizResult" style="display:none"></div>
+
+    <h3 style="margin-top:32px">Checklist tự đánh giá (14 mục)</h3>
+    <p>Click để tick các mục bạn đã nắm vững. Tick được ≥12/14 = sẵn sàng vào việc.</p>
+    
+<ul class="checklist" id="checklist"><li><span class="cbox">☐</span><span class="ctxt">Hiểu 6 bước chính và actor đảm nhiệm từng bước</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Phân biệt rõ 3 gate duyệt — ai duyệt, duyệt gì</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết Gate 1 = QL Nhãn duyệt moodboard sau B2.3</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết Gate 2 = QL TK duyệt phân nhóm sau B3.3</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết Gate 3 = Hội đồng 5 người duyệt cuối ở B6.3</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Hiểu khi KO duyệt thì loop về stage nào (B2.2 / B3.3 / B4)</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết tỉ lệ làm lại hiện 30%, target <20%</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Hiểu 13 cột T-sheet và khi nào nhập từng cột</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết dropdown lấy từ sheet _Lookup, không nhập tay</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết PM dùng: CRM nội bộ + Panchat (Telegram)</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Hiểu output cuối B6.3: biên bản duyệt mẫu (5 chữ ký)</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Biết khi Sửa khác KO duyệt — Sửa chỉ qua 6.3.1, KO duyệt loop B4</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Cập nhật stage mẫu vào CRM ngay sau mỗi bước</span></li>
+<li><span class="cbox">☐</span><span class="ctxt">Khi mẫu KO duyệt Gate 3, biết phải tag Truyền thông ghi lý do</span></li></ul>
+<div class="checklist-score">
+  <strong>Tiến độ: <span id="clCount">0</span> / 14</strong>
+  <span id="clAdvice">Bắt đầu tick các mục bạn đã nắm vững.</span>
+</div>
+  </section>
+
+  <section class="step" data-step="9">
+    <h2>Gallery sơ đồ — In A3</h2>
+    <p>Tổng hợp tất cả sơ đồ trong training để in poster / treo phòng TK. Bấm Ctrl+P để in.</p>
+    <div class="gallery-grid">
+      <div class="diagram-wrap" data-zoom>
+        <svg viewBox="0 0 1000 480" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Flow 6 bước QT-TK01">
+<defs>
+  <filter id="sh1" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+  <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#D97757"/>
+  </marker>
+  <marker id="arrR" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#D04A2C"/>
+  </marker>
+</defs>
+<style>
+.title{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.lbl{font:600 14px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.sub{font:500 12px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.actor{font:500 12px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.gate{font:700 13px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.loop{font:600 12px Inter,sans-serif;fill:#D04A2C;text-anchor:middle}
+</style>
+<text x="500" y="32" class="title" text-anchor="middle">QT-TK01 — 6 bước + 3 gate duyệt</text>
+
+<!-- Steps -->
+<g filter="url(#sh1)">
+  <rect x="30" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="95" y="108" class="lbl">B1</text>
+  <text x="95" y="128" class="sub">Mục tiêu</text>
+  <text x="95" y="170" class="actor">QL Nhãn</text>
+  <text x="95" y="186" class="actor">1 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="190" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="255" y="108" class="lbl">B2</text>
+  <text x="255" y="128" class="sub">Moodboard</text>
+  <text x="255" y="170" class="actor">Team TK · 1-3 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="350" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="415" y="108" class="lbl">B3</text>
+  <text x="415" y="128" class="sub">Phân nhóm SP</text>
+  <text x="415" y="170" class="actor">QL TK · 2-4 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="510" y="80" width="140" height="70" rx="14" fill="#D97757"/>
+  <text x="580" y="108" class="lbl">B4</text>
+  <text x="580" y="128" class="sub">Ra rập + May mẫu</text>
+  <text x="580" y="170" class="actor">NV Rập + May · 5-10 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="680" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="745" y="108" class="lbl">B5</text>
+  <text x="745" y="128" class="sub">KCS</text>
+  <text x="745" y="170" class="actor">Team TK · 1-2 ngày</text>
+</g>
+<g filter="url(#sh1)">
+  <rect x="840" y="80" width="130" height="70" rx="14" fill="#D97757"/>
+  <text x="905" y="108" class="lbl">B6</text>
+  <text x="905" y="128" class="sub">Hội đồng duyệt</text>
+  <text x="905" y="170" class="actor">5 người · 1 ngày</text>
+</g>
+
+<!-- Arrows main flow -->
+<line x1="160" y1="115" x2="186" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="320" y1="115" x2="346" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="480" y1="115" x2="506" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="650" y1="115" x2="676" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+<line x1="810" y1="115" x2="836" y2="115" stroke="#D97757" stroke-width="3" marker-end="url(#arr)"/>
+
+<!-- 3 Gates -->
+<g filter="url(#sh1)">
+  <circle cx="255" cy="240" r="26" fill="#C68F1E"/>
+  <text x="255" y="246" class="gate">G1</text>
+</g>
+<g filter="url(#sh1)">
+  <circle cx="415" cy="240" r="26" fill="#C68F1E"/>
+  <text x="415" y="246" class="gate">G2</text>
+</g>
+<g filter="url(#sh1)">
+  <circle cx="905" cy="240" r="26" fill="#C68F1E"/>
+  <text x="905" y="246" class="gate">G3</text>
+</g>
+<line x1="255" y1="152" x2="255" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="415" y1="152" x2="415" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+<line x1="905" y1="152" x2="905" y2="212" stroke="#C68F1E" stroke-width="2" stroke-dasharray="4 3"/>
+
+<text x="255" y="288" class="actor">QL Nhãn</text>
+<text x="255" y="304" class="actor">duyệt</text>
+<text x="415" y="288" class="actor">QL TK</text>
+<text x="415" y="304" class="actor">duyệt</text>
+<text x="905" y="288" class="actor">Hội đồng</text>
+<text x="905" y="304" class="actor">5 người</text>
+
+<!-- Loop arrows KO duyệt -->
+<path d="M 240 266 Q 200 360 230 360 L 230 360" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 230 360 L 240 150 L 240 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="180" y="380" class="loop">G1 KO → loop B2.2</text>
+
+<path d="M 400 266 Q 360 380 390 400" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 390 400 L 400 150 L 400 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="350" y="420" class="loop">G2 KO → loop B3.3</text>
+
+<path d="M 890 266 Q 600 420 590 400" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4"/>
+<path d="M 590 400 L 580 152" fill="none" stroke="#D04A2C" stroke-width="2.5" stroke-dasharray="6 4" marker-end="url(#arrR)"/>
+<text x="680" y="440" class="loop">G3 KO duyệt → loop B4 (mẫu 2)</text>
+
+<!-- Bottom note -->
+<rect x="30" y="445" width="940" height="28" rx="8" fill="#F5E6DD"/>
+<text x="500" y="464" class="actor" style="font-weight:600">Tỉ lệ làm lại hiện 30% → target &lt;20%. Mỗi gate KO duyệt = tốn thêm 3-7 ngày</text>
+</svg>
+        <div class="diagram-caption">📊 Sơ đồ 1: Flow 6 bước + 3 gate</div>
+      </div>
+      <div class="diagram-wrap" data-zoom>
+        <svg viewBox="0 0 1000 560" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision Tree Gate 3">
+<defs>
+  <filter id="sh2" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+  <marker id="arr2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto">
+    <path d="M0,0 L10,5 L0,10 z" fill="#5C4A3A"/>
+  </marker>
+</defs>
+<style>
+.t{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.qt{font:700 14px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.lb{font:600 14px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.det{font:500 12px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.edge{font:600 12px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.tip{font:500 12px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+</style>
+<text x="500" y="32" class="t" text-anchor="middle">GATE 3 — Hội đồng duyệt (B6.3): 3 nhánh</text>
+
+<g filter="url(#sh2)">
+  <ellipse cx="500" cy="90" rx="160" ry="38" fill="#D97757"/>
+  <text x="500" y="86" class="lb">Hội đồng 5 người duyệt</text>
+  <text x="500" y="106" class="lb" style="font-size:12px">Output: biên bản duyệt mẫu</text>
+</g>
+
+<g filter="url(#sh2)">
+  <rect x="370" y="160" width="260" height="60" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="2"/>
+  <text x="500" y="186" class="qt">❓ Mẫu có đạt tiêu chí?</text>
+  <text x="500" y="206" class="det">Phom · chất · biên bản · bill vải</text>
+</g>
+<line x1="500" y1="128" x2="500" y2="158" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+
+<!-- 3 branches -->
+<line x1="430" y1="220" x2="200" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<line x1="500" y1="222" x2="500" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<line x1="570" y1="220" x2="800" y2="280" stroke="#5C4A3A" stroke-width="2" marker-end="url(#arr2)"/>
+<text x="270" y="250" class="edge">Duyệt ✅</text>
+<text x="500" y="248" class="edge">Sửa ⚠️</text>
+<text x="730" y="250" class="edge">KO duyệt ❌</text>
+
+<g filter="url(#sh2)">
+  <rect x="60" y="282" width="280" height="100" rx="12" fill="#2E8B57"/>
+  <text x="200" y="312" class="lb">Duyệt</text>
+  <text x="200" y="334" class="lb" style="font-size:12px">→ 6.3.1 chỉnh cuối</text>
+  <text x="200" y="354" class="lb" style="font-size:12px">→ 6.4 bill SP</text>
+  <text x="200" y="372" class="lb" style="font-size:12px">→ Sản xuất</text>
+</g>
+<g filter="url(#sh2)">
+  <rect x="360" y="282" width="280" height="100" rx="12" fill="#C68F1E"/>
+  <text x="500" y="312" class="lb">Sửa</text>
+  <text x="500" y="334" class="lb" style="font-size:12px">→ 6.3.1 chỉnh sửa</text>
+  <text x="500" y="354" class="lb" style="font-size:12px">theo điểm hội đồng chỉ ra</text>
+  <text x="500" y="372" class="lb" style="font-size:12px">→ trình lại / sản xuất</text>
+</g>
+<g filter="url(#sh2)">
+  <rect x="660" y="282" width="280" height="100" rx="12" fill="#D04A2C"/>
+  <text x="800" y="312" class="lb">KO duyệt</text>
+  <text x="800" y="334" class="lb" style="font-size:12px">→ loop về B4 (làm mẫu 2)</text>
+  <text x="800" y="354" class="lb" style="font-size:12px">→ Truyền thông ghi lý do</text>
+  <text x="800" y="372" class="lb" style="font-size:12px">→ đánh dấu hệ thống</text>
+</g>
+
+<!-- Bottom tip pill -->
+<g filter="url(#sh2)">
+  <rect x="200" y="430" width="600" height="60" rx="30" fill="#F5E6DD"/>
+  <text x="500" y="455" class="tip" style="font-weight:700">💡 Quy tắc nhớ</text>
+  <text x="500" y="478" class="tip">Duyệt = đi tiếp · Sửa = chỉnh nhỏ tại 6.3.1 · KO duyệt = quay B4 làm lại từ rập</text>
+</g>
+</svg>
+        <div class="diagram-caption">📊 Sơ đồ 2: Decision Tree Gate 3</div>
+      </div>
+      <div class="diagram-wrap" data-zoom>
+        <svg viewBox="0 0 1100 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Mind Map 7 lane actor">
+<defs>
+  <filter id="sh3" x="-20%" y="-20%" width="140%" height="140%">
+    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-opacity="0.18"/>
+  </filter>
+</defs>
+<style>
+.tt{font:700 22px Inter,sans-serif;fill:#2A1F14}
+.cn{font:700 16px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.cs{font:500 12px Inter,sans-serif;fill:#FFFFFF;text-anchor:middle}
+.nb{font:700 13px Inter,sans-serif;fill:#2A1F14;text-anchor:middle}
+.nd{font:500 10px Inter,sans-serif;fill:#5C4A3A;text-anchor:middle}
+.em{font:24px Inter,sans-serif;text-anchor:middle}
+</style>
+<text x="550" y="32" class="tt" text-anchor="middle">7 Lane — Actor &amp; Vai trò QT-TK01</text>
+
+<!-- Center -->
+<g filter="url(#sh3)">
+  <circle cx="550" cy="360" r="85" fill="#D97757"/>
+  <text x="550" y="345" class="em" fill="#fff">🎨</text>
+  <text x="550" y="378" class="cn">QT-TK01</text>
+  <text x="550" y="398" class="cs">7 lane · 6 bước</text>
+  <text x="550" y="416" class="cs">3 gate duyệt</text>
+</g>
+
+<!-- 7 nodes around center -->
+<!-- Top center: QL Nhãn -->
+<g filter="url(#sh3)">
+  <rect x="455" y="80" width="190" height="100" rx="12" fill="#FFFFFF" stroke="#7B5FB5" stroke-width="3"/>
+  <circle cx="550" cy="98" r="20" fill="#7B5FB5"/>
+  <text x="550" y="104" class="em" fill="#fff" style="font-size:18px">👔</text>
+  <text x="550" y="138" class="nb">1. QL Nhãn</text>
+  <text x="550" y="156" class="nd">Brief B1 + duyệt Gate 1</text>
+  <text x="550" y="170" class="nd">+ KCS B5</text>
+</g>
+<line x1="550" y1="180" x2="550" y2="275" stroke="#7B5FB5" stroke-width="2"/>
+
+<!-- Top Right: Team TK moodboard -->
+<g filter="url(#sh3)">
+  <rect x="800" y="160" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="3"/>
+  <circle cx="900" cy="178" r="20" fill="#D97757"/>
+  <text x="900" y="184" class="em" fill="#fff" style="font-size:18px">🎨</text>
+  <text x="900" y="218" class="nb">2. Team TK (moodboard)</text>
+  <text x="900" y="236" class="nd">B2 trend + moodboard</text>
+  <text x="900" y="250" class="nd">+ trình QL Nhãn</text>
+</g>
+<line x1="800" y1="240" x2="635" y2="320" stroke="#D97757" stroke-width="2"/>
+
+<!-- Right: QL TK + Team TK -->
+<g filter="url(#sh3)">
+  <rect x="870" y="310" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#C68F1E" stroke-width="3"/>
+  <circle cx="970" cy="328" r="20" fill="#C68F1E"/>
+  <text x="970" y="334" class="em" fill="#fff" style="font-size:18px">📋</text>
+  <text x="970" y="368" class="nb">3. QL TK + Team TK</text>
+  <text x="970" y="386" class="nd">B3 phân nhóm + Gate 2</text>
+  <text x="970" y="400" class="nd">brief, timeline, phối</text>
+</g>
+<line x1="870" y1="360" x2="635" y2="360" stroke="#C68F1E" stroke-width="2"/>
+
+<!-- Bottom Right: NV Rập -->
+<g filter="url(#sh3)">
+  <rect x="800" y="470" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#2E8B57" stroke-width="3"/>
+  <circle cx="900" cy="488" r="20" fill="#2E8B57"/>
+  <text x="900" y="494" class="em" fill="#fff" style="font-size:18px">✂️</text>
+  <text x="900" y="528" class="nb">4. NV Rập</text>
+  <text x="900" y="546" class="nd">B4.2 rập tạm</text>
+  <text x="900" y="560" class="nd">+ 4.3 mẫu thử CRM</text>
+</g>
+<line x1="800" y1="490" x2="635" y2="400" stroke="#2E8B57" stroke-width="2"/>
+
+<!-- Bottom center: NV May mẫu -->
+<g filter="url(#sh3)">
+  <rect x="455" y="555" width="190" height="100" rx="12" fill="#FFFFFF" stroke="#2E8B57" stroke-width="3"/>
+  <circle cx="550" cy="573" r="20" fill="#2E8B57"/>
+  <text x="550" y="579" class="em" fill="#fff" style="font-size:18px">🧵</text>
+  <text x="550" y="613" class="nb">5. NV May mẫu</text>
+  <text x="550" y="631" class="nd">B4.4 duyệt phom</text>
+  <text x="550" y="645" class="nd">B4.5 hoàn thiện mẫu</text>
+</g>
+<line x1="550" y1="445" x2="550" y2="555" stroke="#2E8B57" stroke-width="2"/>
+
+<!-- Bottom Left: Team TK KCS -->
+<g filter="url(#sh3)">
+  <rect x="100" y="470" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#C68F1E" stroke-width="3"/>
+  <circle cx="200" cy="488" r="20" fill="#C68F1E"/>
+  <text x="200" y="494" class="em" fill="#fff" style="font-size:18px">🔍</text>
+  <text x="200" y="528" class="nb">6. Team TK (KCS)</text>
+  <text x="200" y="546" class="nd">B5 kiểm kỹ thuật</text>
+  <text x="200" y="560" class="nd">+ kho mẫu</text>
+</g>
+<line x1="300" y1="490" x2="465" y2="400" stroke="#C68F1E" stroke-width="2"/>
+
+<!-- Left: Hội đồng -->
+<g filter="url(#sh3)">
+  <rect x="30" y="310" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D04A2C" stroke-width="3"/>
+  <circle cx="130" cy="328" r="20" fill="#D04A2C"/>
+  <text x="130" y="334" class="em" fill="#fff" style="font-size:18px">⚖️</text>
+  <text x="130" y="368" class="nb">7. Hội đồng duyệt</text>
+  <text x="130" y="386" class="nd">B6.3 Gate 3 final</text>
+  <text x="130" y="400" class="nd">5 người · biên bản</text>
+</g>
+<line x1="230" y1="360" x2="465" y2="360" stroke="#D04A2C" stroke-width="2"/>
+
+<!-- Top Left: Team TK Moodboard helper note -->
+<g filter="url(#sh3)">
+  <rect x="100" y="160" width="200" height="100" rx="12" fill="#FFFFFF" stroke="#D97757" stroke-width="3"/>
+  <circle cx="200" cy="178" r="20" fill="#D97757"/>
+  <text x="200" y="184" class="em" fill="#fff" style="font-size:18px">💡</text>
+  <text x="200" y="218" class="nb">Note: PM dùng chung</text>
+  <text x="200" y="236" class="nd">CRM nội bộ + Panchat</text>
+  <text x="200" y="250" class="nd">cho mọi actor</text>
+</g>
+<line x1="300" y1="240" x2="465" y2="320" stroke="#D97757" stroke-width="2" stroke-dasharray="4 3"/>
+
+<!-- Bottom legend -->
+<g>
+  <rect x="200" y="685" width="700" height="30" rx="6" fill="#F5E6DD"/>
+  <text x="550" y="704" class="nb" style="font-weight:600">🟣 QL · 🟠 TK · 🟡 QL+TK · 🟢 Sản xuất · 🔴 Hội đồng</text>
+</g>
+</svg>
+        <div class="diagram-caption">📊 Sơ đồ 3: Mind Map 7 lane actor</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="step-actions">
+    <button id="prevBtn" disabled>← Bước trước</button>
+    <button id="nextBtn">Bước tiếp →</button>
+  </div>
+</div>
+
+<div class="modal" id="zoomModal">
+  <button class="modal-close" id="modalClose" aria-label="Đóng">×</button>
+  <div class="modal-content" id="modalContent"></div>
+</div>
+
+<footer>
+  QT-TK01 Training · v1.0 · 23/05/2026 · Phòng TK PLL · Self-contained HTML, không CDN ngoài (trừ Google Fonts)
+</footer>
+
+<script>
+const stepTitles = ['Tổng quan','B1 Mục tiêu','B2 Moodboard','B3 Phân nhóm','B4 Ra rập + May','B5 KCS','B6 Hội đồng','Quiz + Checklist','Gallery'];
+const totalSteps = stepTitles.length;
+let currentStep = 1;
+let quizScore = 0;
+let quizDone = 0;
+
+const themeBtn = document.getElementById('themeToggle');
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  themeBtn.textContent = t === 'dark' ? '🌙' : '☀️';
+  try { localStorage.setItem('theme', t); } catch(e) {}
+}
+themeBtn.addEventListener('click', () => {
+  setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+});
+try {
+  const saved = localStorage.getItem('theme');
+  if (saved) setTheme(saved);
+  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) setTheme('dark');
+} catch(e) {}
+
+const stepNav = document.getElementById('stepNav');
+const progressFill = document.getElementById('progressFill');
+const progressLabel = document.getElementById('progressLabel');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+
+stepTitles.forEach((title, i) => {
+  const btn = document.createElement('button');
+  btn.innerHTML = `<span class="step-num">Bước ${i+1}</span>${title}`;
+  btn.addEventListener('click', () => goToStep(i+1));
+  if (i === 0) btn.classList.add('active');
+  stepNav.appendChild(btn);
+});
+
+function goToStep(n) {
+  if (n < 1 || n > totalSteps) return;
+  document.querySelectorAll('.step').forEach(s => s.classList.remove('active'));
+  document.querySelector(`.step[data-step="${n}"]`).classList.add('active');
+  document.querySelectorAll('.step-nav button').forEach((b, i) => b.classList.toggle('active', i+1 === n));
+  currentStep = n;
+  progressFill.style.width = `${(n/totalSteps)*100}%`;
+  progressLabel.textContent = `Bước ${n} / ${totalSteps} · ${stepTitles[n-1]}`;
+  prevBtn.disabled = n === 1;
+  nextBtn.disabled = n === totalSteps;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+prevBtn.addEventListener('click', () => goToStep(currentStep - 1));
+nextBtn.addEventListener('click', () => goToStep(currentStep + 1));
+
+// Quiz
+document.querySelectorAll('.quiz').forEach(quiz => {
+  const opts = quiz.querySelectorAll('.quiz-option');
+  opts.forEach(opt => {
+    opt.addEventListener('click', () => {
+      if (quiz.dataset.answered) return;
+      quiz.dataset.answered = '1';
+      opts.forEach(o => o.style.pointerEvents = 'none');
+      if (opt.hasAttribute('data-correct')) {
+        opt.classList.add('correct');
+        quizScore++;
+      } else {
+        opt.classList.add('wrong');
+        const correct = quiz.querySelector('[data-correct]');
+        if (correct) correct.classList.add('correct');
+      }
+      quiz.querySelector('.quiz-feedback').classList.add('show');
+      quizDone++;
+      if (quizDone === 5) {
+        const res = document.getElementById('quizResult');
+        res.style.display = 'block';
+        let msg = `Kết quả: ${quizScore} / 5`;
+        if (quizScore === 5) msg += ' — 🎉 Xuất sắc! Bạn đã nắm quy trình.';
+        else if (quizScore >= 4) msg += ' — 👍 Tốt! Đọc lại bước nào sai để chắc.';
+        else if (quizScore >= 3) msg += ' — 🟡 Tạm ổn, nên ôn lại các gate.';
+        else msg += ' — 🔴 Cần đọc lại SOP trước khi vào việc.';
+        res.textContent = msg;
+      }
+    });
+  });
+});
+
+// Checklist
+const checklist = document.getElementById('checklist');
+const clCount = document.getElementById('clCount');
+const clAdvice = document.getElementById('clAdvice');
+const totalCL = 14;
+checklist.querySelectorAll('li').forEach(li => {
+  li.addEventListener('click', () => {
+    li.classList.toggle('checked');
+    const n = checklist.querySelectorAll('li.checked').length;
+    clCount.textContent = n;
+    if (n === totalCL) clAdvice.textContent = '🎉 Sẵn sàng vào việc.';
+    else if (n >= 12) clAdvice.textContent = '✅ Đã đủ để bắt đầu, nên tick nốt các mục còn lại.';
+    else if (n >= 8) clAdvice.textContent = '👍 Đang đi đúng hướng.';
+    else clAdvice.textContent = 'Tiếp tục tick các mục bạn nắm vững.';
+  });
+});
+
+// Zoom modal
+const modal = document.getElementById('zoomModal');
+const modalContent = document.getElementById('modalContent');
+const modalClose = document.getElementById('modalClose');
+document.querySelectorAll('.diagram-wrap[data-zoom]').forEach(d => {
+  d.addEventListener('click', () => {
+    const svg = d.querySelector('svg');
+    if (!svg) return;
+    modalContent.innerHTML = svg.outerHTML;
+    modal.classList.add('show');
+  });
+});
+modal.addEventListener('click', e => {
+  if (e.target === modal || e.target === modalClose) modal.classList.remove('show');
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') modal.classList.remove('show');
+});
+</script>
+</body>
+</html>
