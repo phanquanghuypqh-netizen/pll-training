@@ -1,124 +1,74 @@
-<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Xử lý nhân sự dư 30–50% công suất</title><style>
-:root{--bg:#f7f1e8;--paper:#fffaf3;--ink:#1f2933;--muted:#6b5f52;--gold:#b8893a;--brown:#3c2f25;--green:#2f6f4e;--red:#b54747;}
-*{box-sizing:border-box} body{margin:0;background:linear-gradient(135deg,#f7f1e8,#efe3d2);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Arial,sans-serif;line-height:1.65} .wrap{max-width:980px;margin:auto;padding:28px 18px 80px} .hero{background:linear-gradient(135deg,#3c2f25,#6f4f2a);color:white;border-radius:28px;padding:36px 30px;box-shadow:0 18px 50px rgba(60,47,37,.18);margin-bottom:22px} .eyebrow{letter-spacing:.12em;text-transform:uppercase;color:#f1d399;font-size:13px;font-weight:700} h1{font-size:42px;line-height:1.08;margin:12px 0 14px;letter-spacing:-.04em} .subtitle{font-size:18px;color:#f8ead5;max-width:780px} .score{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px} .pill{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:9px 14px;font-weight:650} .toc,.card{background:var(--paper);border:1px solid rgba(184,137,58,.22);border-radius:22px;padding:22px 24px;margin:18px 0;box-shadow:0 10px 28px rgba(60,47,37,.08)} .callout{border-left:5px solid var(--gold);background:#fff5df;border-radius:16px;padding:16px 18px;margin:18px 0;font-weight:650} h2{font-size:28px;color:var(--brown);margin:34px 0 12px;border-top:1px solid #ead8bd;padding-top:24px} h3{font-size:21px;color:#5a3d1d;margin:22px 0 8px} p{margin:10px 0} ul,ol{padding-left:24px} li{margin:7px 0} strong{color:#2d2219} blockquote{margin:18px 0;padding:18px 22px;background:#f4eadb;border-left:5px solid var(--green);border-radius:16px;font-size:18px;color:#2f3e34} .table-wrap{overflow-x:auto;border-radius:16px;margin:18px 0;border:1px solid #ead8bd} table{width:100%;border-collapse:collapse;background:white;min-width:720px} th{background:#6f4f2a;color:white;text-align:left} th,td{padding:12px 14px;border-bottom:1px solid #ead8bd;vertical-align:top} tr:nth-child(even) td{background:#fff7eb} .section{background:rgba(255,250,243,.86);border-radius:24px;padding:4px 24px 22px;margin:18px 0} .footer{text-align:center;color:var(--muted);margin-top:40px;font-size:14px} .quote-inline{font-weight:650;color:#704816} @media(max-width:640px){h1{font-size:32px} .hero{padding:28px 22px;border-radius:22px} .wrap{padding:18px 12px 60px} h2{font-size:24px}}
-</style></head><body><main class="wrap"><section class="hero"><div class="eyebrow">GBE AI Hub · Bài tập nhóm 3</div><h1>Xử lý nhân sự dư 30–50% công suất</h1><p class="subtitle">Bản trình bày dùng ngay: cách xử lý khi AI/tối ưu hệ thống làm dư công suất phòng ban nhưng vẫn giữ được niềm tin của đội ngũ ở lại.</p><div class="score"><span class="pill">✅ Đúng đề</span><span class="pill">⭐ 8.7/10 → 9.3/10 sau chỉnh AI framing</span><span class="pill">⏱ Lộ trình 30 ngày</span></div></section><section class="toc"><h3>TL;DR</h3><div class="callout">Không cắt người trước khi cắt việc thừa. AI tạo ra thời gian thừa; CEO giỏi biến thời gian đó thành năng lực mới.</div><ul><li>Đo lại công suất thật từng vị trí.</li><li>Phân loại việc: tạo tiền · giữ hệ thống · tự động hoá/gom lại · bỏ thẳng.</li><li>Phân loại người: giữ · giữ có điều kiện · chuyển vị trí · cho nghỉ văn minh.</li><li>Truyền thông rõ để người ở lại không mất niềm tin.</li></ul></section><section class="section"><h1>Xử lý nhân sự dư 30–50% công suất</h1>
-<h2>Mục tiêu</h2>
-<p>Giải quyết tình trạng 1 phòng ban chỉ sử dụng 30–50% công suất mà vẫn giữ được tinh thần của đội ngũ ở lại.</p>
-<p>Không xử lý theo cảm tính.</p>
-<p>Không cắt giảm chỉ để giảm chi phí ngắn hạn.</p>
-<p>Không giữ người chỉ vì nể nang.</p>
-<p>Mục tiêu cuối cùng là xây lại một đội ngũ gọn hơn, rõ việc hơn, có hiệu suất cao hơn và không làm những người ở lại mất niềm tin.</p>
-<h2>Góc nhìn AI trong bài tập nhóm 3</h2>
-<p>AI không làm <span class="quote-inline">“thừa người”</span> ngay lập tức. AI làm thừa những phần việc lặp lại, thủ công, ít tạo giá trị. Vì vậy bài toán của CEO không phải là cắt bao nhiêu người cho nhanh, mà là biến phần thời gian được giải phóng thành năng lực mới cho tổ chức.</p>
-<p>Cách xử lý đúng là: cắt việc thừa trước, thiết kế lại cơ cấu sau, rồi mới quyết định ai giữ, ai đào tạo lại, ai chuyển vị trí và ai cần cho nghỉ có trật tự.</p>
-<p><strong>Câu chốt để thuyết trình:</strong> Nhân sự dư sau AI không phải bài toán <span class="quote-inline">“cắt bao nhiêu người”</span>, mà là bài toán <span class="quote-inline">“chuyển bao nhiêu thời gian rảnh thành giá trị mới”</span>.</p>
-<h2>Nguyên tắc ra quyết định</h2>
-<p>Một nhân sự không nên được đánh giá chỉ bằng việc <span class="quote-inline">“có bận hay không”</span>.</p>
-<p>Cần đánh giá theo 5 tiêu chí:</p>
-<ol>
-<li>1. Giá trị tạo ra cho công ty</li>
-<li>2. Năng lực thực tế</li>
-<li>3. Thái độ và ý chí học hỏi</li>
-<li>4. Khả năng thích nghi với hệ thống mới</li>
-<li>5. Mức độ cần thiết của vị trí trong 3–6 tháng tới</li>
-</ol>
-<p>Người có ít việc hôm nay nhưng có năng lực học nhanh, thái độ tốt và có thể chuyển đổi sang vai trò mới thì nên giữ.</p>
-<p>Người đang có việc nhưng làm kém, chống thay đổi, không chịu học, không tạo ra giá trị rõ ràng thì cần đưa vào diện xem xét.</p>
-<h2>Bước 1: Đo lại công suất thật của từng vị trí</h2>
-<p>Trước khi quyết định giữ hay cho nghỉ, cần bóc tách lại công việc của cả phòng.</p>
-<p>Với từng nhân sự, cần làm rõ:</p>
+<!DOCTYPE html><html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Xử lý nhân sự dư 30–50% công suất phòng MKT thời AI</title><style>
+:root{--bg:#f7f1e8;--paper:#fffaf3;--ink:#1f2933;--muted:#6b5f52;--gold:#b8893a;--brown:#3c2f25;--green:#2f6f4e;--blue:#315c7d}
+*{box-sizing:border-box}body{margin:0;background:linear-gradient(135deg,#f7f1e8,#efe3d2);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Inter,Arial,sans-serif;line-height:1.68}.wrap{max-width:1040px;margin:auto;padding:28px 18px 80px}.hero{background:radial-gradient(circle at top right,#b8893a 0,#6f4f2a 30%,#30251d 85%);color:white;border-radius:30px;padding:38px 32px;box-shadow:0 18px 50px rgba(60,47,37,.2);margin-bottom:22px}.eyebrow{letter-spacing:.12em;text-transform:uppercase;color:#f1d399;font-size:13px;font-weight:800}h1{font-size:42px;line-height:1.08;margin:12px 0 14px;letter-spacing:-.045em}.subtitle{font-size:18px;color:#f8ead5;max-width:800px}.chips{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px}.chip{background:rgba(255,255,255,.13);border:1px solid rgba(255,255,255,.22);border-radius:999px;padding:9px 14px;font-weight:700}.summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0}.sumcard{background:var(--paper);border:1px solid rgba(184,137,58,.24);border-radius:20px;padding:18px;box-shadow:0 10px 26px rgba(60,47,37,.08)}.sumcard b{display:block;color:var(--brown);font-size:18px;margin-bottom:6px}.content{background:rgba(255,250,243,.9);border:1px solid rgba(184,137,58,.18);border-radius:26px;padding:8px 26px 28px;box-shadow:0 12px 32px rgba(60,47,37,.08)}h2{font-size:28px;color:var(--brown);margin:34px 0 12px;border-top:1px solid #ead8bd;padding-top:24px}h3{font-size:21px;color:#67451f;margin:22px 0 8px}p{margin:10px 0}ul,ol{padding-left:24px}li{margin:7px 0}strong{color:#2d2219}blockquote{margin:16px 0;padding:18px 22px;background:#fff2d8;border-left:5px solid var(--gold);border-radius:16px;font-size:18px;font-weight:650;color:#3c2f25}.footer{text-align:center;color:var(--muted);margin-top:40px;font-size:14px}@media(max-width:640px){.wrap{padding:16px 12px 60px}.hero{padding:28px 22px;border-radius:22px}h1{font-size:31px}h2{font-size:23px}.content{padding:4px 18px 22px}}
+</style></head><body><main class="wrap"><section class="hero"><div class="eyebrow">GBE AI Hub · Bài tập nhóm 3 · Final</div><h1>Xử lý nhân sự dư 30–50% công suất phòng Marketing thời AI</h1><p class="subtitle">Bản cuối gộp 3 nguồn: khung quản trị tổng quát, ví dụ MKT thực chiến, và Excel scorecard/communication để biến bài nói thành công cụ ra quyết định.</p><div class="chips"><span class="chip">✅ Đúng đề</span><span class="chip">⭐ 9.4/10</span><span class="chip">📊 Có scorecard</span><span class="chip">🧭 Lộ trình 30 ngày</span></div></section><section class="summary"><div class="sumcard"><b>Luận điểm chính</b>AI tạo thời gian thừa trước khi tạo người thừa. Cắt việc rác trước, rồi mới xử lý nhân sự.</div><div class="sumcard"><b>Điểm mạnh bản này</b>Có cả tư duy CEO, ví dụ Marketing cụ thể, KPI mới, scorecard và script truyền thông.</div><div class="sumcard"><b>Dùng để thuyết trình</b>Mở bằng bài toán MKT, đi vào 7 bước xử lý, kết bằng thông điệp tinh gọn nhưng văn minh.</div></section><section class="content"><h1>Xử lý nhân sự dư 30–50% công suất phòng Marketing thời AI</h1>
+<h2>Mục tiêu bài tập nhóm 3</h2>
+<p>Giải quyết tình trạng phòng Marketing chỉ sử dụng 30–50% công suất sau khi thị trường chậm lại hoặc AI tự động hoá mạnh hơn.</p>
+<p>Bài toán không phải là “cắt bao nhiêu người cho nhanh”. Bài toán đúng là:</p>
 <ul>
-<li>Mỗi ngày đang làm những đầu việc nào</li>
-<li>Việc nào tạo ra doanh thu</li>
-<li>Việc nào giúp tiết kiệm chi phí</li>
-<li>Việc nào giúp giảm rủi ro vận hành</li>
-<li>Việc nào chỉ là việc phụ, việc phát sinh, việc không còn cần thiết</li>
-<li>Công suất thực tế đang dùng bao nhiêu phần trăm</li>
-<li>Nếu bỏ vị trí này thì hệ thống có bị ảnh hưởng không</li>
+<li>Giữ lại đúng người</li>
+<li>Cắt bỏ đúng việc thừa</li>
+<li>Không làm đội ngũ còn lại mất niềm tin</li>
+<li>Xây lại phòng Marketing gọn hơn, rõ việc hơn, tạo kết quả cao hơn</li>
 </ul>
-<p>Có thể chia công việc thành 4 nhóm:</p>
-<h3>Nhóm A: Việc tạo tiền</h3>
-<p>Ví dụ: bán hàng, vận hành đơn, tối ưu doanh thu, chăm sóc khách, sản xuất nội dung có chuyển đổi, xử lý affiliate, vận hành livestream, tối ưu quảng cáo.</p>
-<p>Đây là nhóm việc nên ưu tiên giữ người hoặc tăng hiệu suất.</p>
-<h3>Nhóm B: Việc giữ hệ thống ổn định</h3>
-<p>Ví dụ: kiểm soát tài khoản, kiểm tra lỗi, quản lý dữ liệu, xử lý sự cố, đối soát, quản lý quy trình, báo cáo.</p>
-<p>Đây là nhóm việc không trực tiếp tạo doanh thu nhưng giúp công ty tránh mất tiền.</p>
-<h3>Nhóm C: Việc có thể tự động hoá hoặc gom lại</h3>
-<p>Ví dụ: nhập liệu lặp lại, copy/paste, tải file, đăng bài thủ công, báo cáo thủ công, phân loại dữ liệu đơn giản.</p>
-<p>Nhóm này cần tối ưu bằng công cụ, quy trình hoặc gom về ít người hơn.</p>
-<h3>Nhóm D: Việc không còn cần thiết</h3>
-<p>Ví dụ: những việc tồn tại do thói quen cũ, báo cáo không ai dùng, quy trình nhiều bước nhưng không tạo thêm giá trị.</p>
-<p>Nhóm này nên cắt bỏ thẳng.</p>
-<h2>Bước 2: Phân loại nhân sự theo ma trận giữ hay thay</h2>
-<p>Sau khi đo lại công việc, phân loại nhân sự thành 4 nhóm.</p>
-<h3>Nhóm 1: Giữ và giao thêm trọng trách</h3>
-<p>Đặc điểm:</p>
+<p><strong>Câu chốt:</strong> AI không làm thừa người ngay lập tức. AI làm thừa phần việc lặp lại. CEO giỏi là người biến thời gian được giải phóng thành năng lực mới cho tổ chức.</p>
+<h2>1. Chẩn đoán trước: dư thật hay dư giả?</h2>
+<p>Trước khi đụng đến con người, phải trả lời 10 câu hỏi chẩn đoán.</p>
+<h3>Dư theo mùa hay dư dài hạn?</h3>
+<p>Nếu mùa hè ít BST nên rảnh, nhưng mùa đông/11.11/12.12 workload tăng mạnh, thì chưa nên cắt. Cần cross-train để chờ peak.</p>
+<h3>Có task đang bỏ sót không?</h3>
+<p>Ví dụ:</p>
 <ul>
-<li>Có năng lực tốt</li>
-<li>Chủ động xử lý việc</li>
-<li>Học nhanh</li>
-<li>Có tinh thần trách nhiệm</li>
-<li>Có thể nhận thêm việc hoặc chuyển sang vai trò mới</li>
+<li>KOC management</li>
+<li>Competitor watch</li>
+<li>CRM khách cũ</li>
+<li>Content calendar</li>
+<li>Theo dõi performance từng format video</li>
+<li>Phân tích sản phẩm bán chạy</li>
 </ul>
-<p>Cách xử lý:</p>
-<p>Giữ lại, giao việc rõ hơn, tăng quyền hạn hợp lý, cho tham gia vào phần việc quan trọng hơn.</p>
-<p>Đây là nhóm cần được trấn an sớm để họ hiểu rằng công ty đang tinh gọn để mạnh hơn, không phải đang bất ổn.</p>
-<h3>Nhóm 2: Giữ có điều kiện và đào tạo lại</h3>
-<p>Đặc điểm:</p>
+<p>Nếu còn task giá trị đang bỏ sót, có thể phòng chưa dư người, chỉ đang dư vì chưa được giao đúng việc.</p>
+<h3>Dư do process kém hay quá đông người?</h3>
+<p>Nếu 3 adser nhưng không có dashboard, report thủ công, không benchmark CPA/ROAS rõ, thì phải sửa process trước.</p>
+<h3>Nếu 1 người nghỉ đột xuất, hệ thống có sập không?</h3>
+<p>Nếu một campaign chỉ một người biết chạy, thì chưa nên cắt ngay. Cần cross-train và tài liệu hoá trước.</p>
+<h3>6 tháng tới workload có tăng không?</h3>
+<p>Nếu sắp có BST mới, mùa peak, kênh mới, brand mới, thị trường mới, thì phải tính nhu cầu tương lai, không chỉ nhìn tháng hiện tại.</p>
+<h2>2. Dấu hiệu phòng MKT đang dư công suất</h2>
+<h3>Team content</h3>
 <ul>
-<li>Thái độ tốt nhưng năng lực chưa đủ</li>
-<li>Có ý chí học hỏi</li>
-<li>Chưa tạo ra nhiều giá trị vì chưa được giao đúng việc hoặc chưa có quy trình rõ</li>
-<li>Có thể chuyển đổi sang vị trí khác</li>
+<li>Viết ít content/ngày</li>
+<li>Chờ idea từ leader</li>
+<li>Không chủ động nghiên cứu trend</li>
+<li>Không hiểu sản phẩm</li>
+<li>Content làm ra nhưng không tạo chuyển đổi</li>
 </ul>
-<p>Cách xử lý:</p>
-<p>Cho thời gian cải thiện 30–60 ngày.</p>
-<p>Cần có mục tiêu rõ:</p>
+<h3>Team edit video</h3>
 <ul>
-<li>Học kỹ năng gì</li>
-<li>Nhận đầu việc nào</li>
-<li>Chỉ số đầu ra là gì</li>
-<li>Sau bao lâu đánh giá lại</li>
+<li>Render ít</li>
+<li>Chờ task</li>
+<li>Không tối ưu tốc độ sản xuất</li>
+<li>Không học AI tools mới</li>
+<li>Không tạo được format video có tỷ lệ giữ chân tốt</li>
 </ul>
-<p>Nếu sau thời gian thử thách vẫn không đạt thì chuyển sang phương án cho nghỉ.</p>
-<h3>Nhóm 3: Chuyển vị trí hoặc giảm phạm vi công việc</h3>
-<p>Đặc điểm:</p>
+<h3>Team media / ads</h3>
 <ul>
-<li>Vị trí hiện tại dư công suất</li>
-<li>Nhân sự vẫn có điểm mạnh ở mảng khác</li>
-<li>Có thể phù hợp với công việc mới hơn</li>
+<li>Chỉ biết set camp cơ bản</li>
+<li>Không biết đọc data</li>
+<li>Scale chậm</li>
+<li>Không biết tối ưu CPA / ROAS</li>
+<li>Gặp lỗi là đứng</li>
 </ul>
-<p>Cách xử lý:</p>
-<p>Không cho nghỉ ngay.</p>
-<p>Cần xem có thể chuyển sang các mảng đang thiếu người như:</p>
+<h3>Team affiliate / KOC</h3>
 <ul>
-<li>Sản xuất nội dung</li>
-<li>Kiểm duyệt chất lượng</li>
-<li>Chăm sóc khách hàng</li>
-<li>Vận hành kênh</li>
-<li>Theo dõi dữ liệu</li>
-<li>Hỗ trợ livestream</li>
-<li>Test sản phẩm</li>
-<li>Vận hành công cụ AI</li>
+<li>Chỉ upload hoặc theo task có sẵn</li>
+<li>Không biết build hệ thống traffic</li>
+<li>Không biết phân tích sản phẩm</li>
+<li>Không có tư duy nhân bản</li>
+<li>Không chủ động tìm hướng scale mới</li>
 </ul>
-<p>Nếu chuyển vị trí, cần nói rõ đây không phải là hạ cấp, mà là tái phân bổ nguồn lực để phù hợp với giai đoạn mới.</p>
-<h3>Nhóm 4: Cho nghỉ có trật tự</h3>
-<p>Đặc điểm:</p>
-<ul>
-<li>Công việc không còn cần thiết</li>
-<li>Năng lực không phù hợp</li>
-<li>Thái độ kém</li>
-<li>Không chịu học</li>
-<li>Hay đổ lỗi</li>
-<li>Ảnh hưởng tinh thần đội nhóm</li>
-<li>Giữ lại tạo thêm chi phí và làm chậm hệ thống</li>
-</ul>
-<p>Cách xử lý:</p>
-<p>Cho nghỉ dứt khoát nhưng văn minh.</p>
-<p>Không nên kéo dài vì càng kéo dài càng làm đội ngũ mất niềm tin vào tiêu chuẩn của công ty.</p>
-<h2>Bước 3: Không cắt người trước khi cắt việc thừa</h2>
-<p>Sai lầm phổ biến là thấy dư công suất thì cắt người ngay.</p>
-<p>Cách đúng hơn là:</p>
+<h2>3. Cắt việc thừa trước, không cắt người trước</h2>
+<p>Sai lầm lớn nhất là thấy dư công suất thì cắt người ngay.</p>
+<p>Cách đúng:</p>
 <ol>
 <li>1. Cắt việc thừa</li>
 <li>2. Gộp việc trùng lặp</li>
@@ -127,134 +77,296 @@
 <li>5. Đo lại công suất</li>
 <li>6. Sau đó mới quyết định giữ hay cho nghỉ</li>
 </ol>
-<p>Nếu chưa cắt việc thừa mà đã cắt người, người ở lại sẽ phải ôm cả đống việc rác. Khi đó công ty không tinh gọn hơn, chỉ mệt hơn.</p>
-<p>Tinh gọn đúng là bỏ việc không tạo giá trị, sau đó mới tối ưu nhân sự.</p>
-<h2>Bước 4: Thiết kế lại cơ cấu phòng ban</h2>
-<p>Khi một phòng ban dư 30–50% công suất, vấn đề không chỉ nằm ở nhân sự.</p>
-<p>Có thể cơ cấu phòng ban đang sai.</p>
-<p>Cần trả lời các câu hỏi:</p>
-<ul>
-<li>Phòng này tồn tại để tạo ra kết quả gì</li>
-<li>Kết quả đó đo bằng chỉ số nào</li>
-<li>Mỗi vị trí đóng góp gì vào kết quả chung</li>
-<li>Có vị trí nào đang chỉ <span class="quote-inline">“có mặt”</span> nhưng không có đầu ra rõ không</li>
-<li>Có việc nào nên chuyển sang phòng khác không</li>
-<li>Có việc nào nên gom về một đầu mối không</li>
-<li>Có việc nào nên dùng công cụ thay vì dùng người không</li>
-</ul>
-<p>Sau đó thiết kế lại theo nguyên tắc:</p>
-<p>Mỗi người phải có đầu ra rõ.</p>
-<p>Mỗi vị trí phải gắn với một chỉ số.</p>
-<p>Mỗi công việc phải có lý do tồn tại.</p>
-<h2>Bước 5: Giao lại KPI theo đầu ra, không theo thời gian ngồi làm</h2>
-<p>Một phòng ban dư công suất thường xuất hiện khi công ty quản lý theo cảm giác bận rộn.</p>
-<p>Cần chuyển sang quản lý theo đầu ra.</p>
+<p>Nếu chưa cắt việc thừa mà đã cắt người, người ở lại sẽ ôm thêm việc rác. Công ty không tinh gọn hơn, chỉ mệt hơn.</p>
+<h2>4. Bóc tách việc theo 4 nhóm</h2>
+<h3>Nhóm A: Việc tạo tiền</h3>
 <p>Ví dụ:</p>
 <ul>
-<li>Nhân sự nội dung: số video đạt chuẩn, tỷ lệ video qua duyệt, tỷ lệ video có view, tỷ lệ video tạo đơn</li>
-<li>Nhân sự vận hành kênh: số kênh hoạt động ổn định, tỷ lệ kênh lỗi, doanh thu/kênh, số lỗi được xử lý</li>
-<li>Nhân sự livestream: số phiên live, thời lượng live, tỷ lệ giữ chân, số đơn, GMV, hoa hồng</li>
-<li>Nhân sự chăm sóc khách: số hội thoại xử lý, tỷ lệ phản hồi đúng hạn, tỷ lệ chốt đơn, tỷ lệ khiếu nại</li>
-<li>Nhân sự kỹ thuật/tool: số lỗi xử lý, thời gian phản hồi, số quy trình được tự động hoá, mức tiết kiệm nhân sự</li>
+<li>Chạy ads ra đơn</li>
+<li>Tối ưu ROAS/CPA</li>
+<li>Làm video có chuyển đổi</li>
+<li>Vận hành livestream</li>
+<li>KOC/affiliate tạo GMV</li>
+<li>Chăm sóc khách để tăng repeat</li>
 </ul>
-<p>Khi KPI rõ, công ty sẽ biết ai đang tạo giá trị và ai chỉ đang tồn tại trong hệ thống.</p>
-<h2>Bước 6: Truyền thông nội bộ để người ở lại không mất ý chí</h2>
-<p>Đây là phần rất quan trọng.</p>
-<p>Nếu xử lý nhân sự mà truyền thông kém, người ở lại sẽ nghĩ:</p>
+<p>Nhóm này nên giữ người tốt hoặc tăng hiệu suất.</p>
+<h3>Nhóm B: Việc giữ hệ thống ổn định</h3>
+<p>Ví dụ:</p>
 <ul>
-<li>Công ty bất ổn rồi</li>
-<li>Không biết bao giờ đến lượt mình</li>
-<li>Cố gắng cũng vô nghĩa</li>
-<li>Làm nhiều hơn nhưng chưa chắc được ghi nhận</li>
+<li>Kiểm tra lỗi campaign</li>
+<li>Đối soát số liệu</li>
+<li>Dashboard performance</li>
+<li>Quản lý quy trình</li>
+<li>Cảnh báo rủi ro</li>
 </ul>
-<p>Vì vậy cần nói rõ với đội ngũ:</p>
-<p>Công ty không cắt giảm vì khó khăn đơn thuần.</p>
-<p>Công ty đang tinh gọn để tăng sức chiến đấu.</p>
-<p>Người có năng lực, có trách nhiệm, có ý chí học hỏi sẽ có nhiều cơ hội hơn.</p>
-<p>Người ở lại không phải để gánh việc thay người ra đi, mà để cùng xây một hệ thống rõ ràng và hiệu quả hơn.</p>
-<p>Thông điệp nên dùng:</p>
-<blockquote>“Giai đoạn này công ty sẽ rà soát lại toàn bộ công việc và cơ cấu nhân sự. Mục tiêu không phải là cắt giảm bằng mọi giá, mà là loại bỏ những việc không còn tạo giá trị, sắp xếp lại đúng người đúng việc, và xây một đội ngũ gọn hơn nhưng mạnh hơn.</blockquote>
-<p>Những người có tinh thần trách nhiệm, chịu học, chịu thay đổi và tạo ra kết quả rõ ràng sẽ luôn có chỗ trong đội ngũ.</p>
-<p>Công ty sẽ minh bạch tiêu chí đánh giá, có thời gian chuyển đổi phù hợp cho những vị trí còn khả năng phát triển, và xử lý văn minh với những trường hợp không còn phù hợp.”</p>
-<h2>Bước 7: Lộ trình xử lý trong 30 ngày</h2>
-<h3>Tuần 1: Rà soát công việc</h3>
+<p>Nhóm này không tạo tiền trực tiếp nhưng giúp công ty tránh mất tiền.</p>
+<h3>Nhóm C: Việc có thể tự động hoá hoặc gom lại</h3>
+<p>Ví dụ:</p>
 <ul>
-<li>Liệt kê toàn bộ đầu việc của phòng ban</li>
-<li>Đo công suất từng người</li>
-<li>Xác định việc tạo giá trị và việc không tạo giá trị</li>
-<li>Tìm các việc có thể bỏ, gộp hoặc tự động hoá</li>
+<li>Report ads thủ công</li>
+<li>Copy/paste dữ liệu</li>
+<li>Lên lịch đăng bài</li>
+<li>Gen draft caption</li>
+<li>Track competitor cơ bản</li>
+<li>Ranking KOC theo GMV</li>
 </ul>
-<h3>Tuần 2: Đánh giá nhân sự</h3>
+<p>Nhóm này nên dùng AI/tool trước, rồi mới tính nhân sự.</p>
+<h3>Nhóm D: Việc không còn cần thiết</h3>
+<p>Ví dụ:</p>
 <ul>
-<li>Chấm từng người theo năng lực, thái độ, đầu ra, khả năng học hỏi</li>
-<li>Phân loại thành 4 nhóm: giữ, giữ có điều kiện, chuyển vị trí, cho nghỉ</li>
-<li>Xác định vị trí nào thật sự cần trong cơ cấu mới</li>
+<li>Báo cáo không ai đọc</li>
+<li>Meeting cho có</li>
+<li>Quy trình nhiều bước nhưng không tạo giá trị</li>
+<li>Task tồn tại do thói quen cũ</li>
+</ul>
+<p>Nhóm này nên bỏ thẳng.</p>
+<h2>5. KPI mới cho phòng Marketing thời AI</h2>
+<p>Không đo thời gian ngồi làm. Đo output, tốc độ, khả năng scale và khả năng dùng AI.</p>
+<h3>Content</h3>
+<ul>
+<li>Số hook tốt/ngày</li>
+<li>Tỷ lệ video qua duyệt</li>
+<li>Tỷ lệ giữ chân video</li>
+<li>CTR</li>
+<li>Số content tạo đơn hoặc tạo lead</li>
+</ul>
+<h3>Edit video</h3>
+<ul>
+<li>Số video hoàn thiện/ngày</li>
+<li>Tốc độ render/sửa</li>
+<li>Tỷ lệ video usable</li>
+<li>Tỷ lệ video giữ chân tốt</li>
+</ul>
+<h3>Media / Ads</h3>
+<ul>
+<li>CPA</li>
+<li>ROAS</li>
+<li>Spend/revenue</li>
+<li>Số creative test/tuần</li>
+<li>Tỷ lệ scale campaign thành công</li>
+</ul>
+<h3>Affiliate / KOC</h3>
+<ul>
+<li>GMV</li>
+<li>Số KOC active</li>
+<li>Số traffic source mới</li>
+<li>ROI/KOC</li>
+<li>Tỷ lệ nhân bản mô hình thành công</li>
+</ul>
+<h2>6. Scorecard giữ hay cho nghỉ</h2>
+<p>Chấm từng nhân sự theo 5 nhóm tiêu chí, có trọng số.</p>
+<h3>Output / KPI — 30%</h3>
+<p>Người này tạo ra kết quả thật không?</p>
+<p>Ví dụ:</p>
+<ul>
+<li>Video lên view</li>
+<li>Ads ra đơn</li>
+<li>ROAS/CPA tốt</li>
+<li>Livestream giữ người xem</li>
+<li>Affiliate có GMV</li>
+</ul>
+<h3>Đa nhiệm / Cross-skill — 20%</h3>
+<p>Người này có thể học thêm mảng khác không?</p>
+<p>Ví dụ:</p>
+<ul>
+<li>Content hiểu ads</li>
+<li>Ads hiểu creative</li>
+<li>KOC hiểu sản phẩm</li>
+<li>Edit biết dùng AI tool</li>
+</ul>
+<h3>Thái độ chủ động — 20%</h3>
+<p>Người này có tự tìm việc, tự giải quyết vấn đề, tự học AI không?</p>
+<h3>Chi phí thay thế — 15%</h3>
+<p>Nếu người này nghỉ, công ty mất bao lâu để thay? Có rủi ro hệ thống không?</p>
+<h3>Kiến thức về ads / khách hàng / sản phẩm — 15%</h3>
+<p>Người này có hiểu brand, khách hàng, sản phẩm, kênh bán không?</p>
+<h2>7. Phân loại nhân sự thành 4 nhóm</h2>
+<h3>Nhóm 1: Giữ và giao thêm trọng trách</h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Có năng lực tốt</li>
+<li>Chủ động</li>
+<li>Học nhanh</li>
+<li>Có trách nhiệm</li>
+<li>Tạo kết quả rõ</li>
+</ul>
+<p>Cách xử lý:</p>
+<ul>
+<li>Giữ lại</li>
+<li>Giao scope rõ hơn</li>
+<li>Có thể tăng quyền hoặc tăng thưởng theo hiệu suất</li>
+<li>Cho tham gia vận hành hệ thống AI mới</li>
+</ul>
+<h3>Nhóm 2: Giữ có điều kiện và đào tạo lại</h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Thái độ tốt</li>
+<li>Chưa đủ năng lực</li>
+<li>Còn khả năng phát triển</li>
+<li>Có thể chuyển đổi</li>
+</ul>
+<p>Cách xử lý:</p>
+<ul>
+<li>Cho lộ trình 30–60 ngày</li>
+<li>Giao KPI cụ thể</li>
+<li>Training AI/tool/quy trình mới</li>
+<li>Đánh giá lại sau thời hạn</li>
+</ul>
+<h3>Nhóm 3: Chuyển vị trí hoặc giảm phạm vi công việc</h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Vị trí hiện tại dư công suất</li>
+<li>Người vẫn có điểm mạnh ở mảng khác</li>
+<li>Có thể dùng ở vai trò mới</li>
+</ul>
+<p>Có thể chuyển sang:</p>
+<ul>
+<li>Kiểm duyệt chất lượng output AI</li>
+<li>Theo dõi dữ liệu</li>
+<li>Hỗ trợ livestream</li>
+<li>Test sản phẩm</li>
+<li>CRM khách cũ</li>
+<li>Vận hành KOC/KOL</li>
+<li>AI operator cho phòng Marketing</li>
+</ul>
+<h3>Nhóm 4: Cho nghỉ có trật tự</h3>
+<p>Đặc điểm:</p>
+<ul>
+<li>Công việc không còn cần</li>
+<li>Năng lực không phù hợp</li>
+<li>Không chịu học</li>
+<li>Toxic năng lượng</li>
+<li>Chi phí cao nhưng hiệu suất thấp</li>
+<li>Giữ lại làm chậm cả hệ thống</li>
+</ul>
+<p>Cách xử lý:</p>
+<ul>
+<li>Cho nghỉ dứt khoát nhưng văn minh</li>
+<li>Có package rõ</li>
+<li>Không kéo dài vì người giỏi sẽ mất niềm tin vào tiêu chuẩn công ty</li>
+</ul>
+<h2>8. Ma trận quyết định</h2>
+<h3>Star</h3>
+<p>Output cao, thái độ tốt, học nhanh, đa nhiệm tốt.</p>
+<p><strong>Quyết định:</strong> giữ, giao thêm scope, tăng quyền lợi.</p>
+<h3>Workhorse</h3>
+<p>Làm ổn, chịu khó, nhưng chưa bứt phá.</p>
+<p><strong>Quyết định:</strong> giữ có điều kiện, giao KPI mới, đào tạo AI.</p>
+<h3>Growth</h3>
+<p>Hiện tại chưa mạnh nhưng thái độ tốt, có potential.</p>
+<p><strong>Quyết định:</strong> thử thách 30–60 ngày hoặc chuyển vị trí.</p>
+<h3>Underfit</h3>
+<p>Output thấp, không học, không phù hợp văn hoá mới.</p>
+<p><strong>Quyết định:</strong> cho nghỉ có trật tự.</p>
+<h2>9. Câu hỏi 1-on-1 để đánh giá nhân sự</h2>
+<p>Dùng buổi gặp riêng 20–30 phút.</p>
+<h3>Nhóm output</h3>
+<ol>
+<li>1. Tuần qua em làm được 3 việc quan trọng nhất là gì? Kết quả cụ thể ra sao?</li>
+<li>2. Campaign/video/KOC nào em tự hào nhất tháng này? Chỉ số thế nào?</li>
+<li>3. Có task nào em thấy mình làm chưa tốt? Nếu làm lại thì khác gì?</li>
+</ol>
+<h3>Nhóm đa nhiệm</h3>
+<ol>
+<li>4. Ngoài việc chính, em có thể làm thêm việc gì cho phòng?</li>
+<li>5. Nếu phòng giảm 1–2 người, em có thể gánh thêm mảng nào? Cần training bao lâu?</li>
+<li>6. Em có quan tâm kênh khác ngoài mảng hiện tại không?</li>
+</ol>
+<h3>Nhóm thái độ</h3>
+<ol>
+<li>7. Em thấy phòng MKT đang có vấn đề gì cần cải thiện?</li>
+<li>8. Khi ads fail / creative flop, em xử lý thế nào?</li>
+<li>9. Em có đề xuất gì để MKT làm tốt hơn với ít người hơn?</li>
+</ol>
+<h3>Nhóm hiểu khách hàng / sản phẩm</h3>
+<ol>
+<li>10. Audience chính của brand là ai?</li>
+<li>11. Sản phẩm/BST nào đang bán chạy nhất? Vì sao?</li>
+<li>12. Đối thủ chính đang làm gì khác mình?</li>
+</ol>
+<h3>Nhóm potential</h3>
+<ol>
+<li>13. Em muốn phát triển theo hướng nào trong 1–2 năm tới?</li>
+<li>14. Nếu chọn 1 kỹ năng mới để học, em chọn gì?</li>
+<li>15. Không có em thì phòng bị ảnh hưởng gì?</li>
+</ol>
+<h2>10. Truyền thông để người ở lại không mất ý chí</h2>
+<p>Sai lầm lớn nhất là cắt người trong im lặng.</p>
+<p>Hậu quả:</p>
+<ul>
+<li>Người giỏi cũng muốn nghỉ</li>
+<li>Team mất niềm tin</li>
+<li>Tin đồn lan nhanh</li>
+<li>Hiệu suất tụt mạnh</li>
+</ul>
+<p>Thông điệp cần nói rõ:</p>
+<blockquote>Công ty không cắt giảm vì khó khăn đơn thuần. Công ty đang tinh gọn để tăng sức chiến đấu. Người có năng lực, có trách nhiệm, chịu học và tạo kết quả rõ sẽ có nhiều cơ hội hơn.</blockquote>
+<h2>11. Cách nói với người ở lại</h2>
+<blockquote>Giai đoạn tới công ty sẽ tinh gọn lại đội ngũ để vận hành hiệu quả hơn. Anh/chị/em nằm trong nhóm công ty muốn giữ lại và kỳ vọng sẽ đóng vai trò quan trọng hơn.</blockquote>
+<blockquote></blockquote>
+<blockquote>Việc tinh gọn không có nghĩa là người ở lại phải gánh việc vô lý. Công ty sẽ bỏ bớt việc thừa, làm rõ KPI và phân lại trách nhiệm.</blockquote>
+<blockquote></blockquote>
+<blockquote>Điều công ty cần ở giai đoạn này là tinh thần chủ động, khả năng học nhanh và thái độ cùng công ty đi qua giai đoạn thay đổi.</blockquote>
+<h2>12. Cách nói với người cần cải thiện</h2>
+<blockquote>Công ty đánh giá bạn vẫn có thái độ tốt và còn khả năng phát triển, nhưng hiệu quả công việc chưa đạt kỳ vọng của giai đoạn mới.</blockquote>
+<blockquote></blockquote>
+<blockquote>Công ty sẽ cho bạn một lộ trình cải thiện trong 30–60 ngày. Mục tiêu sẽ rất rõ: cần đạt đầu việc nào, chỉ số nào, kỹ năng nào.</blockquote>
+<blockquote></blockquote>
+<blockquote>Sau thời gian này, nếu kết quả cải thiện tốt, công ty sẽ tiếp tục bố trí bạn trong cơ cấu mới. Nếu không đạt, hai bên sẽ trao đổi phương án phù hợp hơn.</blockquote>
+<h2>13. Cách nói với người phải cho nghỉ</h2>
+<blockquote>Sau khi rà soát lại cơ cấu và định hướng vận hành mới, công ty nhận thấy vị trí hiện tại không còn phù hợp với nhu cầu trong giai đoạn tới.</blockquote>
+<blockquote></blockquote>
+<blockquote>Đây không phải là đánh giá phủ nhận toàn bộ nỗ lực của bạn, mà là quyết định dựa trên thay đổi về cơ cấu và yêu cầu công việc.</blockquote>
+<blockquote></blockquote>
+<blockquote>Công ty sẽ xử lý đầy đủ quyền lợi theo quy định và hỗ trợ bạn trong quá trình bàn giao để việc kết thúc diễn ra rõ ràng, văn minh.</blockquote>
+<h2>14. Lộ trình triển khai 30 ngày</h2>
+<h3>Tuần 1: Chẩn đoán và bóc tách việc</h3>
+<ul>
+<li>Trả lời 10 câu hỏi chẩn đoán</li>
+<li>Liệt kê toàn bộ đầu việc</li>
+<li>Phân loại việc A/B/C/D</li>
+<li>Xác định việc bỏ, gộp, automate</li>
+</ul>
+<h3>Tuần 2: Đo workload và chấm scorecard</h3>
+<ul>
+<li>Đo giờ/tuần từng người</li>
+<li>Đo output thật</li>
+<li>Chấm scorecard theo 5 tiêu chí</li>
+<li>Phân loại Star / Workhorse / Growth / Underfit</li>
 </ul>
 <h3>Tuần 3: Tái phân bổ và thử thách</h3>
 <ul>
-<li>Giao lại việc cho nhóm giữ</li>
-<li>Thiết kế lộ trình 30–60 ngày cho nhóm cần đào tạo lại</li>
+<li>Giao scope mới cho người giữ</li>
+<li>Thiết kế lộ trình 30–60 ngày cho nhóm cần cải thiện</li>
 <li>Chuyển vị trí cho người còn phù hợp</li>
-<li>Chuẩn bị phương án cho nghỉ với người không phù hợp</li>
+<li>Chuẩn bị package cho người không phù hợp</li>
 </ul>
 <h3>Tuần 4: Truyền thông và triển khai</h3>
 <ul>
-<li>Thông báo định hướng cho cả phòng</li>
-<li>Trao đổi riêng với từng nhân sự bị ảnh hưởng</li>
-<li>Công bố cơ cấu mới</li>
-<li>Bắt đầu đo KPI theo đầu ra</li>
-<li>Theo dõi tinh thần đội ngũ ở lại</li>
+<li>Gặp 1-on-1 từng người bị ảnh hưởng</li>
+<li>Họp team còn lại</li>
+<li>Nói rõ scope mới</li>
+<li>Bắt đầu đo KPI mới</li>
+<li>Theo dõi tinh thần đội ngũ</li>
 </ul>
-<h2>Bảng tiêu chí chấm điểm nhân sự</h2>
-<p>Chấm mỗi tiêu chí từ 1 đến 5 điểm.</p>
-<div class="table-wrap"><table>
-<tr><th>Tiêu chí</th><th>1 điểm</th><th>3 điểm</th><th>5 điểm</th></tr>
-<tr><td>Năng lực chuyên môn</td><td>Không đáp ứng</td><td>Làm được việc cơ bản</td><td>Làm tốt, xử lý độc lập</td></tr>
-<tr><td>Hiệu suất đầu ra</td><td>Thấp, khó đo</td><td>Đạt mức trung bình</td><td>Tạo kết quả rõ ràng</td></tr>
-<tr><td>Thái độ</td><td>Bị động, tiêu cực</td><td>Hợp tác ở mức vừa đủ</td><td>Chủ động, trách nhiệm</td></tr>
-<tr><td>Khả năng học hỏi</td><td>Chậm, ngại thay đổi</td><td>Có thể đào tạo</td><td>Học nhanh, thích nghi tốt</td></tr>
-<tr><td>Khả năng chuyển đổi</td><td>Khó bố trí việc khác</td><td>Có thể thử vai trò mới</td><td>Linh hoạt, dùng được ở nhiều vị trí</td></tr>
-<tr><td>Ảnh hưởng đội nhóm</td><td>Kéo tinh thần đi xuống</td><td>Trung tính</td><td>Tạo năng lượng tốt</td></tr>
-<tr><td>Mức độ cần thiết của vị trí</td><td>Không còn cần</td><td>Còn cần một phần</td><td>Rất cần cho giai đoạn tới</td></tr>
-</table></div>
-<p>Gợi ý xử lý:</p>
+<h2>15. Những lỗi cần tránh</h2>
 <ul>
-<li>30–35 điểm: Giữ và giao thêm trọng trách</li>
-<li>23–29 điểm: Giữ có điều kiện, đào tạo lại hoặc chuyển vị trí</li>
-<li>16–22 điểm: Xem xét chuyển vị trí hoặc cho thời gian thử thách ngắn</li>
-<li>Dưới 16 điểm: Nên cho nghỉ có trật tự</li>
+<li>Cắt người khi chưa có data</li>
+<li>Cắt người trước khi cắt việc thừa</li>
+<li>Giữ người yếu chỉ vì thương</li>
+<li>Cho nghỉ người thái độ tốt mà chưa thử chuyển đổi</li>
+<li>Bắt người ở lại gánh toàn bộ việc rác</li>
+<li>Truyền thông kiểu “công ty khó khăn nên phải cắt”</li>
+<li>Cắt nhân sự nhưng vẫn giữ nguyên quy trình cũ</li>
 </ul>
-<h2>Cách nói chuyện với nhân sự được giữ lại</h2>
-<p>Nên nói thẳng, rõ, nhưng tạo niềm tin.</p>
-<p>Mẫu trao đổi:</p>
-<blockquote>“Giai đoạn tới công ty sẽ tinh gọn lại đội ngũ để vận hành hiệu quả hơn. Anh/chị/em nằm trong nhóm công ty muốn giữ lại và kỳ vọng sẽ đóng vai trò quan trọng hơn.</blockquote>
-<p>Việc tinh gọn không có nghĩa là người ở lại phải gánh việc vô lý. Công ty sẽ bỏ bớt việc thừa, làm rõ KPI và phân lại trách nhiệm.</p>
-<p>Điều công ty cần ở giai đoạn này là tinh thần chủ động, khả năng học nhanh và thái độ cùng công ty đi qua giai đoạn thay đổi.”</p>
-<h2>Cách nói chuyện với nhân sự cần cải thiện</h2>
-<p>Mẫu trao đổi:</p>
-<blockquote>“Hiện tại công ty đánh giá bạn vẫn có thái độ tốt và còn khả năng phát triển, nhưng hiệu quả công việc chưa đạt kỳ vọng của giai đoạn mới.</blockquote>
-<p>Công ty sẽ cho bạn một lộ trình cải thiện trong 30–60 ngày. Trong thời gian này, mục tiêu sẽ rất rõ: bạn cần đạt những đầu việc nào, chỉ số nào và kỹ năng nào.</p>
-<p>Sau thời gian này, nếu kết quả cải thiện tốt, công ty sẽ tiếp tục bố trí bạn trong cơ cấu mới. Nếu không đạt, hai bên sẽ trao đổi phương án phù hợp hơn.”</p>
-<h2>Cách nói chuyện với nhân sự phải cho nghỉ</h2>
-<p>Mẫu trao đổi:</p>
-<blockquote>“Sau khi rà soát lại cơ cấu và định hướng vận hành mới, công ty nhận thấy vị trí hiện tại không còn phù hợp với nhu cầu trong giai đoạn tới.</blockquote>
-<p>Đây không phải là đánh giá phủ nhận toàn bộ nỗ lực của bạn trong thời gian qua, mà là quyết định dựa trên sự thay đổi về cơ cấu và yêu cầu công việc.</p>
-<p>Công ty sẽ xử lý đầy đủ các quyền lợi theo quy định và hỗ trợ bạn trong quá trình bàn giao để việc kết thúc diễn ra rõ ràng, văn minh.”</p>
-<h2>Những lỗi cần tránh</h2>
-<p>Không nên tuyên bố cắt giảm đột ngột khi chưa có tiêu chí.</p>
-<p>Không nên giữ người yếu chỉ vì thương, vì người giỏi sẽ mất niềm tin.</p>
-<p>Không nên cho nghỉ người có thái độ tốt mà chưa thử chuyển đổi nếu công ty vẫn còn việc phù hợp.</p>
-<p>Không nên bắt người ở lại gánh toàn bộ phần việc của người nghỉ.</p>
-<p>Không nên truyền thông kiểu <span class="quote-inline">“công ty khó khăn nên phải cắt”</span>. Cách nói này dễ làm đội ngũ mất tinh thần.</p>
-<p>Không nên cắt nhân sự nhưng vẫn giữ nguyên quy trình cũ. Như vậy chỉ làm hệ thống quá tải.</p>
 <h2>Kết luận</h2>
-<p>Nhân sự dư 30–50% công suất không phải lúc nào cũng đồng nghĩa với việc phải cho nghỉ 30–50% con người.</p>
+<p>Nhân sự dư 30–50% công suất không đồng nghĩa phải cho nghỉ 30–50% con người.</p>
 <p>Cần phân biệt rõ:</p>
-<p>Công việc nào thừa.</p>
-<p>Vị trí nào thừa.</p>
-<p>Người nào không còn phù hợp.</p>
-<p>Người nào vẫn đáng giữ để đào tạo và chuyển đổi.</p>
-<p>Tinh gọn đúng không phải là làm đội ngũ sợ hãi.</p>
-<p>Tinh gọn đúng là giúp người ở lại nhìn thấy tiêu chuẩn rõ hơn, cơ hội rõ hơn và lý do để tiếp tục cố gắng.</p>
-<p>Một công ty mạnh không phải là công ty đông người.</p>
-<p>Một công ty mạnh là công ty có đúng người, đúng việc, đúng tiêu chuẩn và đúng tốc độ phát triển.</p></section><div class="footer">Generated for Huy Tổng Dz · PLL · 23/05/2026</div></main></body></html>
+<ul>
+<li>Công việc nào thừa</li>
+<li>Vị trí nào thừa</li>
+<li>Người nào không còn phù hợp</li>
+<li>Người nào đáng giữ để đào tạo và chuyển đổi</li>
+</ul>
+<p>Tinh gọn đúng không làm đội ngũ sợ hãi. Tinh gọn đúng giúp người ở lại nhìn thấy tiêu chuẩn rõ hơn, cơ hội rõ hơn và lý do để cố gắng.</p>
+<p>Một công ty mạnh không phải là công ty đông người. Một công ty mạnh là công ty có đúng người, đúng việc, đúng tiêu chuẩn và đúng tốc độ phát triển.</p></section><div class="footer">Generated for Huy Tổng Dz · PLL · 23/05/2026</div></main></body></html>
